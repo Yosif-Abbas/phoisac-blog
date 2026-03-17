@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic, Geist } from "next/font/google";
+import type Metadata from "next";
+import { IBM_Plex_Sans_Arabic } from "next/font/google";
 
 import RootProviders from "@/components/RootProviders";
 
@@ -13,7 +13,11 @@ export const metadata: Metadata = {
   },
 };
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const IBMPlexSansArabic = IBM_Plex_Sans_Arabic({
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
+  subsets: ["arabic"],
+  variable: "--font-sans",
+});
 
 export default function RootLayout({
   children,
@@ -21,9 +25,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+    <html
+      lang="ar"
+      dir="rtl"
+      suppressHydrationWarning
+      className={cn("font-sans", IBMPlexSansArabic.variable)}
+    >
       <body
-        className={`${geist.className} antialiased bg-background`}
+        className={`${IBMPlexSansArabic.className} antialiased bg-background`}
       >
         <RootProviders>{children}</RootProviders>
       </body>

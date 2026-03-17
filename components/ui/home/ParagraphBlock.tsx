@@ -1,4 +1,4 @@
-import { BlockType } from "@/types/post-content";
+import { BlockType } from "@/types/post";
 
 export default function ParagraphBlock({ data }: BlockType) {
   return (

@@ -1,32 +1,30 @@
 import { createClient } from "@/lib/supabase/client";
-import { PostType } from "@/types/post-content";
+import { Post } from "@/types/post";
 
 const supabaseClient = createClient();
 
-export async function createPost({ title, slug, content }: PostType) {
+export async function createPost({ title, slug, content, created_at }: Post) {
   const { error } = await supabaseClient
     .from("posts")
-    .insert([{ title, slug, content }]);
+    .insert([{ title, slug, content, created_at }]);
 
   if (error) throw new Error(error.message);
 }
 
-export async function uploadImage(file: File) {
-  const fileName = `${Date.now()}-${file.name}`;
-
-  const { data, error } = await supabaseClient.storage
+export async function uploadImage(file: File, filePath: string) {
+  const { error } = await supabaseClient.storage
     .from("post-images")
-    .upload(fileName, file);
+    .upload(filePath, file);
 
-  console.log(data);
+  if (error) throw error;
 
-  if (error) throw new Error(error.message);
+  const {
+    data: { publicUrl },
+  } = supabaseClient.storage.from("post-images").getPublicUrl(filePath);
 
-  return data;
-
-  //   function uploadImage(file: File): Promise<{
-  //     id: string;
-  //     path: string;
-  //     fullPath: string;
-  // }>
+  return {
+    path: filePath,
+    url: publicUrl,
+    error,
+  };
 }

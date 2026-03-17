@@ -8,8 +8,6 @@ import ImageTool from "@editorjs/image";
 import Embed from "@editorjs/embed";
 import Paragraph from "@editorjs/paragraph";
 
-import { createClient } from "@/lib/supabase/client";
-
 interface EditorProps {
   /** initial data to load into the editor */
   data?: OutputData;

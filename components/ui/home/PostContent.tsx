@@ -1,6 +1,6 @@
 "use client";
 
-import { PostContentType, BlockType } from "@/types/post-content";
+import { PostContentType, BlockType } from "@/types/post";
 
 import ParagraphBlock from "./ParagraphBlock";
 import ImageBlock from "./ImageBlock";

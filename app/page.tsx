@@ -1,4 +1,4 @@
-import Posts from "@/components/ui/posts/Posts";
+import Posts from "@/components/ui/home/Posts";
 import { Suspense } from "react";
 
 export default async function Home() {
