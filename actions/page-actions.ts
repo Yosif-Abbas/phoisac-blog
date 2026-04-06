@@ -1,9 +1,18 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { OutputData } from "@editorjs/editorjs";
 import { revalidatePath } from "next/cache";
 
-export async function updatePageAction({ page_name, content, updateDate }) {
+export async function updatePageAction({
+  page_name,
+  content,
+  updateDate,
+}: {
+  page_name: string;
+  content: OutputData;
+  updateDate: string | Date;
+}) {
   const supabase = await createClient();
 
   const { data: tag, error } = await supabase
