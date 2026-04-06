@@ -11,35 +11,61 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: "rgb(var(--background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
+
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "rgb(var(--card) / <alpha-value>)",
+          hover: "rgb(var(--card-hover) / <alpha-value>)",
+          foreground: "rgb(var(--card-foreground) / <alpha-value>)",
+          active: "rgb(var(--card-active) / <alpha-value>)",
+          border: "rgb(var(--card-border) / <alpha-value>)",
         },
+
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "rgb(var(--popover) / <alpha-value>)",
+          border: "rgb(var(--popover-foreground) / <alpha-value>)",
         },
+
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "rgb(var(--primary) / <alpha-value>)",
+          hover: "rgb(var(--primary-hover) / <alpha-value>)",
+          active: "rgb(var(--primary-active) / <alpha-value>)",
+          foreground: "rgb(var(--primary-foreground) / <alpha-value>)",
         },
+
+        tag: {
+          DEFAULT: "rgb(var(--tag) / <alpha-value>)",
+          foreground: "rgb(var(--tag-foreground) / <alpha-value>)",
+          border: "rgb(var(--tag-border) / <alpha-value>)",
+          hover: "rgb(var(--tag-hover) / <alpha-value>)",
+          active: "rgb(var(--tag-active) / <alpha-value>)",
+        },
+
+        container: {
+          DEFAULT: "rgb(var(--container) / <alpha-value>)",
+        },
+
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "rgb(var(--secondary) / <alpha-value>)",
+          foreground: "rgb(var(--secondary-foreground) / <alpha-value>)",
         },
+
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "rgb(var(--muted) / <alpha-value>)",
+          foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
         },
+
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
         },
+
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "rgb(var(--destructive) / <alpha-value>)",
+          foreground: "rgb(var(--destructive-foreground) / <alpha-value>)",
+          hover: "rgb(var(--destructive-hover) / <alpha-value>)",
+          active: "rgb(var(--destructive-active) / <alpha-value>)",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -52,12 +78,11 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      fontFamily: {
+        sans: ["var(--font-sans)", "sans-serif"],
+        serif: ["var(--font-amiri)", "serif"],
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: ["prettier-plugin-tailwindcss"],
 } satisfies Config;

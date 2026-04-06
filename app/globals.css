@@ -2,8 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-.container {
-  @apply mx-auto my-0 py-0 lg:px-16;
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* body {
+  background: rgb(var(--background));
+  background: url("/noise.svg");
+  background-repeat: no-repeat;
+  background-position: top;
+  background-size: cover;
+
+  color: rgb(var(--foreground));
+} */
+
+.layout-container {
+  @apply max-w-[1200px] mx-auto px-6;
+}
+
+.panel {
+  /* Removed the heavy horizontal padding to let the fixed grid width do the work */
+  @apply py-6 px-4 shadow-sm bg-container lg:rounded-2xl border border-[#E5E7EB] dark:border-[#1F2937] w-full;
+}
+
+.date {
+  @apply text-xs lg:text-sm text-nowrap uppercase tracking-widest text-stone-400;
+}
+
+.post-list {
+  @apply flex flex-col divide-y divide-[#aaaaaaaa];
+}
+
+.tag {
+  @apply text-xs uppercase cursor-pointer tracking-widest bg-tag text-tag-foreground  px-3 py-1 rounded-full;
+}
+
+.tag:hover {
+  background-color: var(--tag-hover);
+}
+
+.tag.marked {
+  background-color: var(--tag-active);
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -11,6 +52,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-tag: var(--tag);
+  --color-tag-foreground: var(--tag-foreground);
+  --color-tag-border: var(--tag-border);
+  --color-tag-hover: var(--tag-hover);
+  --color-tag-active: var(--tag-active);
+  --color-container: var(--container);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -40,8 +87,8 @@
   --color-primary: var(--primary);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -52,78 +99,104 @@
 }
 
 :root {
-  --background: #f8f6f2;
-  --foreground: #2a2a2a;
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: 249 250 251; /* #F9FAFB - Soft Gray */
+  --foreground: 15 23 42; /* #0F172A - Deep Navy */
+  --container: 255 255 255; /* #FFFFFF - Pure White */
+
+  --card: 242 243 245; /* #F2F3F5 - Light Sky Gray */
+  --card-hover: 229 231 235; /* #E5E7EB - Silver */
+  --border: 226 232 240; /* #E2E8F0 - Slate Border */
+
+  /* Primary Blue (The Brand) */
+  --primary: 17 24 39; /* #111827 - Rich Black/Blue */
+  --primary-foreground: 255 255 255;
+
+  /* Action Green (Login/Success) */
+  --accent: 16 185 129; /* #10B981 - Emerald Green */
+  --accent-foreground: 255 255 255;
+
+  /* Muted & Secondary */
+  --secondary: 248 250 252; /* #F8FAFC - Ghost White */
+  --secondary-foreground: 71 85 105; /* #475569 - Slate Blue */
+  --muted: 156 163 175; /* #9CA3AF - Gray */
+  --muted-foreground: 100 116 139; /* #64748B - Cool Gray */
+
+  /* Tags (Slate Blue) */
+  --tag: 224 231 255; /* #E0E7FF - Indigo Tint */
+  --tag-foreground: 55 48 163; /* #3730A3 - Deep Indigo */
+  --tag-border: 199 210 254;
+  --tag-hover: 199 210 254;
+  --tag-active: 165 180 252;
+
+  /* Destructive (Logout/Delete) */
+  --destructive: 220 38 38;
+  --destructive-foreground: 255 255 255;
 }
 
 .dark {
-  --background: #1e1e1e;
-  --foreground: #eaeaea;
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: 11 18 32; /* #0B1220 - Deep Obsidian */
+  --foreground: 248 250 252; /* #F8FAFC - Off-White */
+  --container: 17 24 39; /* #111828 - Dark Slate */
+  --card: 24 33 47; /* #18212F - Midnight Blue */
+  --card-hover: 31 41 55; /* #1F2937 - Charcoal */
+  --border: 30 41 59; /* #1E293B - Slate Stroke */
+
+  /* Primary Blue (Sky Blue for contrast) */
+  --primary: 229 231 235; /* #E5E7EB - Light Gray */
+  --primary-foreground: 15 23 42;
+
+  /* Action Green */
+  --accent: 52 211 153; /* #34D399 - Mint Green */
+  --accent-foreground: 15 23 42;
+
+  --muted: 107 114 128;
+  --muted-foreground: 148 163 184;
+
+  --tag: 30 27 75;
+  --tag-foreground: 199 210 254;
+  --tag-border: 49 46 129;
+  --tag-hover: 49 46 129;
+  --tag-active: 67 56 202;
+
+  /* Destructive */
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+}
+
+/* 1. The Admin Dashboard (Emerald/Forest) */
+.theme-admin {
+  /* Slightly more "Minty" background to contrast with white cards */
+  --container: 236 253 245; /* #ECFDF5 - Clear Mint */
+  --background: 255 255 255; /* #FFFFFF - Keep cards pure white */
+  --border: 167 243 208; /* #A7F3D0 - Stronger Emerald border */
+}
+
+.dark .theme-admin {
+  /* Deep Forest Obsidian - noticeably greener than the blog */
+  --background: 6 15 15; /* #060F0F - Dark Forest */
+  --container: 14 24 24; /* #0E1818 - Darker Teal-Obsidian */
+  --border: 20 60 50; /* #143C32 - Glowing Forest border */
+}
+
+/* 2. The Edit Post (Indigo/Deep Sea) */
+.theme-edit {
+  /* Soft Lavender/Blue background */
+  --container: 238 242 255; /* #EEF2FF - Light Indigo */
+  --background: 255 255 255;
+  --border: 199 210 254; /* #C7D2FE - Stronger Indigo border */
+}
+
+.dark .theme-edit {
+  /* Midnight Indigo - Very distinct from the Emerald admin */
+  --background: 10 10 30; /* #0A0A1E - Deep Space Blue */
+  --container: 15 15 45; /* #0F0F2D - Navy Obsidian */
+  --border: 45 50 100; /* #2D3264 - Strong Blue border */
 }
 
 @layer base {
-  * {
+  /* * {
     @apply border-border outline-ring/50;
-  }
+  } */
   body {
     @apply bg-background text-foreground;
   }
@@ -148,30 +221,109 @@ card: #2A2A2A
 accent: #FF8A65
 secondary: #7AA2FF */
 
-/* editor.js custom styles */
-@layer components {
-  .editorjs-wrapper .ce-block {
-    @apply transition-colors;
-  }
-  .editorjs-wrapper .ce-block:hover {
-    @apply bg-gray-100 dark:bg-gray-800;
-  }
-  .editorjs-wrapper .ce-block.ce-block--selected,
-  .editorjs-wrapper .ce-block .ce-block__content:focus-within {
-    @apply bg-gray-200 dark:bg-gray-700;
-  }
+.ce-block__content {
+  @apply bg-white/5 dark:bg-[#1F2937]/20 
+         border border-[#E5E7EB] dark:border-[#1F2937] 
+         rounded-2xl p-6 mb-6 
+         transition-all duration-300;
 
-  /* always show the + buttons that appear between blocks */
-  .editorjs-wrapper .ce-toolbar__plus,
-  .editorjs-wrapper .ce-block__plus,
-  .editorjs-wrapper .ce-toolbox__plus {
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
+  max-width: 100% !important;
+}
+
+.ce-block--focused .ce-block__content {
+  @apply border-primary/40 bg-white/10 dark:bg-[#1F2937]/40 shadow-lg;
+}
+
+.ce-paragraph {
+  @apply leading-relaxed text-lg;
+}
+
+.ce-toolbar__content {
+  max-width: 100% !important;
+}
+
+.ce-toolbar__actions {
+  @apply right-[91%];
+}
+
+.ce-toolbar__plus {
+  @apply bg-primary text-primary-foreground 
+         hover:bg-primary/90 
+         rounded-lg shadow-sm 
+         transition-all duration-200 
+         w-8 h-8 flex items-center justify-center !important;
+}
+
+.ce-toolbar__settings-btn {
+  @apply bg-container border border-card-hover 
+         text-foreground/60 hover:text-foreground 
+         hover:bg-card-hover 
+         rounded-lg ml-2
+         transition-all duration-200 
+         w-8 h-8 flex items-center justify-center !important;
+}
+
+.ce-toolbar__plus svg,
+.ce-toolbar__settings-btn svg {
+  @apply w-5 h-5;
+}
+
+/* .ce-popover {
+  @apply bg-container border border-card-hover shadow-2xl rounded-xl overflow-hidden !important;
+} */
+
+.ce-popover-item__icon {
+  @apply bg-white/5 shadow-sm rounded-md !important;
+}
+
+.editorjs-wrapper {
+  @apply bg-container border border-card-hover rounded-2xl;
+}
+
+[data-placeholder]:empty:before {
+  content: attr(data-placeholder);
+  color: theme("colors.muted.foreground");
+  opacity: 0.3;
+  cursor: text;
+}
+
+/* Optional: Add a decorative line between the two halves */
+.grid-cols-2::after {
+  content: "✦";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: theme("colors.primary.DEFAULT");
+  opacity: 0.4;
+  font-size: 0.8rem;
 }
 
 .list-icon {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* .marked {
+  color: var(--background);
+  background-color: rgb(var(--primary));
+} */
+
+.sidebar-link {
+  @apply py-4 w-full flex items-center gap-x-2 px-2 text-muted-foreground hover:text-foreground
+  hover:bg-card/50 hover:shadow-sm;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-[#1F2937] rounded-full;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/50;
 }

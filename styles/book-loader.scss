@@ -1,6 +1,6 @@
 $thickness: 5px;
-$duration: 2500;
-$delay: $duration/6;
+$duration: 3500;
+$delay: calc($duration / 6);
 
 .bookshelf_wrapper {
   position: absolute;
