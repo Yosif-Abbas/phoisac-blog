@@ -1,12 +1,12 @@
-import TagsForm from "@/components/ui/dashboard/tags/TagsForm";
-import TagsHydration from "@/components/ui/dashboard/tags/TagsHydration";
-import TagsSkeleton from "@/components/ui/skeleton/TagsSkeleton";
+import TagsForm from "@/components/dashboard/tags/TagsForm";
+import TagsHydration from "@/components/dashboard/tags/TagsHydration";
+import TagsSkeleton from "@/components/skeleton/TagsSkeleton";
 import { Suspense } from "react";
 
 export default function Tags() {
   return (
     <div className="flex flex-col gap-y-10 h-full w-full animate-in fade-in duration-500">
-      <div className="flex items-baseline gap-x-2 border-b border-[#1F2937] pb-4">
+      <div className="flex items-baseline gap-x-2 border-b border-card-hover pb-4">
         <h1 className="text-3xl font-bold text-foreground">
           لوحة تحكم المسؤول
         </h1>
@@ -15,15 +15,7 @@ export default function Tags() {
 
       <TagsForm />
 
-      <Suspense
-        fallback={
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <TagsSkeleton key={i} />
-            ))}
-          </div>
-        }
-      >
+      <Suspense fallback={<TagsSkeleton />}>
         <TagsHydration />
       </Suspense>
     </div>

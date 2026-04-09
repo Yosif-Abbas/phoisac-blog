@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/client";
-import { Post, PostContent, Tag } from "@/types/post";
+import type { Post, PostTag } from "@/types/cms";
 
 const supabaseClient = createClient();
+const pageSize = parseInt(process.env.NEXT_PUBLIC_PAGE_SIZE || "10", 10);
 
 // services/client/posts.ts
 export async function getPosts({
@@ -13,20 +14,22 @@ export async function getPosts({
   searchTerm?: string;
   tags?: string[];
 }) {
-  const pageSize = 5;
-
-  // By using 'any', we stop VS Code from throwing the giant red TypeScript error
   let query: any;
 
   if (searchTerm) {
     query = supabaseClient
       .rpc("search_posts_pro", { search_term: searchTerm })
-      .select(`*, "post_tags"(*, tags(*))`);
+      .select(
+        `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
+      );
   } else {
-    query = supabaseClient.from("posts").select(`*, "post_tags"(*, tags(*))`);
+    query = supabaseClient
+      .from("posts")
+      .select(
+        `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
+      );
   }
 
-  // Handle Tags gracefully
   if (tags.length > 0) {
     const { data: tagData } = await supabaseClient
       .from("tags")
@@ -60,9 +63,11 @@ export async function getPosts({
     return { posts: [], nextCursor: null };
   }
 
-  const posts = (data as any[]).map((post) => ({
+  const posts = (data as Post[]).map((post) => ({
     ...post,
-    tags: post["post_tags"]?.map((pt: any) => pt.tags).filter(Boolean) || [],
+    tags:
+      post["post_tags"]?.map((pt: PostTag) => pt.tags).filter(Boolean).flat?.() || [],
+    post_tags: undefined,
   }));
 
   return {
@@ -106,104 +111,95 @@ export async function createPost({
   return post;
 }
 
-// utils/supabase/posts.ts
-
 export interface UploadImageResult {
   url: string | null;
   path: string | null;
   error: string | null;
 }
 
+export type UploadBucket = "post-images" | "pages-images";
+
 export async function uploadImage(
   file: File,
   filePath: string,
-  onProgress?: (percent: number) => void,
+  bucketName: UploadBucket,
 ): Promise<UploadImageResult> {
-  return new Promise((resolve) => {
-    // 1. Pull environment variables (no hardcoded project IDs)
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    const bucketName = "post-images"; // Consider passing this as a parameter if it changes
-
-    if (!supabaseUrl || !anonKey) {
-      return resolve({
-        url: null,
-        path: null,
-        error: "Missing Supabase environment variables.",
+  try {
+    // 2. Use the official SDK to handle the upload, auth, and headers automatically
+    const { data, error } = await supabaseClient.storage
+      .from(bucketName)
+      .upload(filePath, file, {
+        upsert: true,
+        contentType: file.type, // Explicitly pass the file type
       });
+
+    if (error) {
+      return { url: null, path: null, error: error.message };
     }
 
-    const uploadUrl = `${supabaseUrl}/storage/v1/object/${bucketName}/${filePath}`;
-    const xhr = new XMLHttpRequest();
+    // 3. Let Supabase construct the public URL for you securely
+    const { data: publicUrlData } = supabaseClient.storage
+      .from(bucketName)
+      .getPublicUrl(data.path);
 
-    xhr.open("POST", uploadUrl, true);
+    // 4. Try to persist a media record for analytics and management
+    try {
+      const fileName = data.path.split("/").pop() || file.name;
+      const fileSize = file.size || 0;
+      const mimeType = file.type || "application/octet-stream";
 
-    // 2. Set necessary headers
-    xhr.setRequestHeader("Authorization", `Bearer ${anonKey}`);
-    xhr.setRequestHeader("apikey", anonKey);
-    xhr.setRequestHeader("x-upsert", "true");
-    xhr.setRequestHeader("Content-Type", file.type); // Important for storage file types
+      // Get the currently signed-in user (if any)
+      const {
+        data: { user: authUser },
+      } = await supabaseClient.auth.getUser();
 
-    // 3. Handle Progress
-    if (onProgress) {
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100);
-          onProgress(percent);
-        }
-      };
+      await supabaseClient.from("media").insert([
+        {
+          file_name: fileName,
+          file_path: data.path,
+          public_url: publicUrlData.publicUrl,
+          file_size: fileSize,
+          mime_type: mimeType,
+          alt_text: null,
+          uploader_id: authUser?.id || null,
+        },
+      ]);
+    } catch (err) {
+      console.error("Failed to insert media row:", err);
     }
 
-    // 4. Handle Completion
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        // Construct the public URL dynamically to avoid needing the supabase-js client
-        const publicUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${filePath}`;
-        resolve({ url: publicUrl, path: filePath, error: null });
-      } else {
-        // Attempt to parse Supabase's specific error message
-        let errorMessage = `Upload failed with status ${xhr.status}`;
-        try {
-          const response = JSON.parse(xhr.responseText);
-          errorMessage = response.message || response.error || errorMessage;
-        } catch {
-          // Fallback to the generic error message if parsing fails
-        }
-        resolve({ url: null, path: null, error: errorMessage });
-      }
+    return {
+      url: publicUrlData.publicUrl,
+      path: data.path,
+      error: null,
     };
-
-    // 5. Handle Network Errors
-    xhr.onerror = () => {
-      resolve({
-        url: null,
-        path: null,
-        error: "A network error occurred during the upload.",
-      });
-    };
-
-    // 6. Execute Upload
-    xhr.send(file);
-  });
+  } catch (err: unknown) {
+    // 4. Catch unexpected network drops or execution crashes safely
+    const errorMessage =
+      err instanceof Error
+        ? err.message
+        : "An unexpected network error occurred.";
+    return { url: null, path: null, error: errorMessage };
+  }
 }
 
 // lib/posts.ts
 export async function getPostBySlug(slug: string) {
   const { data, error } = await supabaseClient
     .from("posts")
-    .select(`*,post_tags(*, tags(*))`)
+    .select(
+      `id,created_at,updated_at,title,slug,excerpt,content,view_count,post_tags(tags(id,name))`,
+    )
     .eq("slug", slug)
     .single();
 
   if (error) throw new Error(error.message);
 
-  console.log(data);
-
   const tags = data["post_tags"]?.map((postTag) => postTag.tags);
 
   const post = {
     ...data,
-    tags,
+    tags: tags?.filter(Boolean).flat?.() || [],
     post_tags: undefined,
   };
 
@@ -221,7 +217,6 @@ export async function deletePost({ slug }: { slug: string }) {
 
 export async function updatePostWithTags({
   postId,
-  slug,
   data,
   newTagIds,
   updated_at,
@@ -279,30 +274,20 @@ export async function updatePostWithTags({
   }
 }
 
-// type PostWithTagsRaw = {
-//   id?: number;
-//   content: PostContent;
-//   title: string;
-//   slug?: string;
-//   created_at?: string;
-//   updated_at?: string | null;
-//   post_tags: Array<{
-//     tags: Tag;
-//   }>;
-// };
-
 export async function getLatestPosts({ limit }: { limit: number }) {
   const { data, error } = await supabaseClient
     .from("posts")
-    .select(`*, "post_tags"(*, tags(*))`)
+    .select(
+      `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
+    )
     .order("created_at", { ascending: false })
     .limit(limit);
 
   if (error) throw new Error(error.message);
 
-  const posts = data?.map((post: Post) => ({
+  const posts = data?.map((post) => ({
     ...post,
-    tags: post["post_tags"]?.map((pt) => pt.tags),
+    tags: post["post_tags"]?.map((pt) => pt.tags).flat?.(),
   }));
 
   console.log(posts);

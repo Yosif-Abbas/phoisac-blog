@@ -41,7 +41,7 @@ export async function updateTag({
   tagId,
   tagName,
 }: {
-  tagId: number;
+  tagId: string;
   tagName: string;
 }) {
   console.log(tagId);
@@ -56,7 +56,7 @@ export async function updateTag({
   if (error) throw new Error(error.message);
 }
 
-export async function deleteTag({ tagId }: { tagId: number }) {
+export async function deleteTag({ tagId }: { tagId: string }) {
   const { error } = await supabaseClient.from("tags").delete().eq("id", tagId);
 
   if (error) throw new Error(error.message);

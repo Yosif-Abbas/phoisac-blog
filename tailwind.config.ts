@@ -1,6 +1,6 @@
-import type { Config } from "tailwindcss";
+import tailwindAnimate from "tailwindcss-animate";
 
-export default {
+const config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -11,6 +11,15 @@ export default {
   theme: {
     extend: {
       colors: {
+        keyframes: {
+          slowPulse: {
+            "0%, 100%": { opacity: "0.4" },
+            "50%": { opacity: "0.7" },
+          },
+        },
+        animation: {
+          "slow-pulse": "slowPulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        },
         background: "rgb(var(--background) / <alpha-value>)",
         foreground: "rgb(var(--foreground) / <alpha-value>)",
 
@@ -67,22 +76,28 @@ export default {
           hover: "rgb(var(--destructive-hover) / <alpha-value>)",
           active: "rgb(var(--destructive-active) / <alpha-value>)",
         },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+
+        border: "rgb(var(--border) / <alpha-value>)",
+        input: "rgb(var(--input) / <alpha-value>)",
+        ring: "rgb(var(--ring) / <alpha-value>)",
+
         chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
+          "1": "rgb(var(--chart-1) / <alpha-value>)",
+          "2": "rgb(var(--chart-2) / <alpha-value>)",
+          "3": "rgb(var(--chart-3) / <alpha-value>)",
+          "4": "rgb(var(--chart-4) / <alpha-value>)",
+          "5": "rgb(var(--chart-5) / <alpha-value>)",
         },
       },
+
       fontFamily: {
         sans: ["var(--font-sans)", "sans-serif"],
         serif: ["var(--font-amiri)", "serif"],
       },
     },
   },
-  plugins: ["prettier-plugin-tailwindcss"],
-} satisfies Config;
+
+  plugins: [tailwindAnimate],
+};
+
+export default config;

@@ -4,8 +4,8 @@ import { Amiri, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Suspense } from "react";
-import LoaderBooks from "@/components/ui/loaders/LoaderBooks";
 import ServerLayoutContent from "@/components/ServerLayoutContent";
+import Loading from "@/components/ui/Loading";
 
 export const metadata: Metadata = {
   title: {
@@ -38,11 +38,9 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${IBMPlexSansArabic.variable} ${amiri.variable}`}
     >
-      <body className="font-sans antialiased bg-background text-foreground min-h-dvh">
-        <Suspense fallback={<LoaderBooks />}>
+      <body className="font-sans antialiased bg-background text-foreground min-h-dvh flex flex-col">
+        <Suspense fallback={<Loading />}>
           <Providers>
-            {/* This Suspense boundary catches the async fetching we will do next, 
-              preventing the "Blocking Route" error. */}
             <ServerLayoutContent>{children}</ServerLayoutContent>
           </Providers>
         </Suspense>

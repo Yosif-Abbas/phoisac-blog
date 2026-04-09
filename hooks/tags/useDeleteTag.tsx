@@ -8,7 +8,7 @@ export function useDeleteTag() {
   const queryClient = useQueryClient();
 
   const { mutate: deleteTag, isPending } = useMutation({
-    mutationFn: async ({ tagId }: { tagId: number }) => {
+    mutationFn: async ({ tagId }: { tagId: string }) => {
       await deleteTagAction({ tagId });
     },
     onSuccess: () => {

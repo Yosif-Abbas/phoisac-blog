@@ -10,10 +10,10 @@ export function useUpdateTag() {
       tagId,
       tagName,
     }: {
-      tagId: number;
+      tagId: string;
       tagName: string;
     }) => {
-      updateTagAction({ tagId, tagName });
+      await updateTagAction({ tagId, tagName });
     },
     onSuccess: () => {
       toast.success("تم تحديث الوسم!");

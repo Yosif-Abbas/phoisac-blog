@@ -1,10 +1,17 @@
-import { formatDate } from "@/lib/utils/formatDate";
+"use client";
 
-interface Date {
-  date: string;
+import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
+import { formatDate } from "@/lib/utils/formatDate";
+import { Eye } from "lucide-react";
+
+interface Props {
+  date: string | Date;
+  view_count: number;
 }
 
-export default function UserBadge({ date }: Date) {
+export default function UserBadge({ date, view_count }: Props) {
+  const { isAdmin } = useCurrentUser();
+
   return (
     <div className="flex items-center gap-x-2 text-sm text-muted-foreground">
       <span>بقلم</span>
@@ -16,7 +23,20 @@ export default function UserBadge({ date }: Date) {
       >
         {formatDate(date)}
       </time>
-      {/* Add a '5 min read' here for extra pro feel */}
+      {isAdmin && Boolean(view_count) && (
+        <>
+          <span className="opacity-30">•</span>
+          <div className="flex items-center gap-x-1">
+            <Eye size={16} />
+            <span className="">
+              {view_count}{" "}
+              {(view_count > 1 && view_count < 11) || view_count === 0
+                ? "قراءات"
+                : "قراءة"}
+            </span>
+          </div>
+        </>
+      )}
     </div>
   );
 }

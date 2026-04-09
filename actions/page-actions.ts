@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { OutputData } from "@editorjs/editorjs";
+import type { StructuredContent } from "@/types/cms";
 import { revalidatePath } from "next/cache";
 
 export async function updatePageAction({
@@ -10,7 +10,7 @@ export async function updatePageAction({
   updateDate,
 }: {
   page_name: string;
-  content: OutputData;
+  content: StructuredContent;
   updateDate: string | Date;
 }) {
   const supabase = await createClient();
@@ -24,6 +24,7 @@ export async function updatePageAction({
   if (error) throw new Error(error.message);
 
   revalidatePath(`/dashboard/pages/${page_name}`);
+  revalidatePath(`/${page_name}`);
 
   return tag;
 }

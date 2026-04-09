@@ -1,6 +1,6 @@
-import Hero from "@/components/ui/home/Hero";
-import LatestPostsHydration from "@/components/ui/home/LatestPostsHydration";
-import PostCardSkeleton from "@/components/ui/skeleton/PostCardSkeleton";
+import Hero from "@/components/home/Hero";
+import LatestPostsHydration from "@/components/home/LatestPostsHydration";
+import PostCardSkeleton from "@/components/skeleton/PostCardSkeleton";
 import Link from "next/link";
 import { Suspense } from "react";
 

@@ -1,11 +1,15 @@
 import { useMutation } from "@tanstack/react-query";
-import { OutputData } from "@editorjs/editorjs";
-import { Block, Tag } from "@/types/post";
-import { uploadImage } from "@/services/client/posts"; // Keep your existing uploadImage function!
-import { slugify } from "transliteration";
+import type { Block, StructuredContent, Tag } from "@/types/cms";
+import { uploadImage } from "@/services/client/posts";
 import { createPostAction } from "@/actions/post-actions";
 import { useState } from "react";
 import { useCurrentUser } from "../auth/useCurrentUser";
+import {
+  generateSlug,
+  generateStoragePath,
+  optimizeImageBeforeUpload,
+} from "@/lib/utils/media";
+import { normalizeBlock } from "@/lib/utils/types";
 
 type UploadStatus = {
   name: string;
@@ -20,88 +24,126 @@ export function useCreatePost() {
   const { mutate, isPending } = useMutation({
     mutationFn: async (post: {
       title: string;
-      content: OutputData;
+      content: StructuredContent;
       tags: Tag[];
       excerpt?: string;
     }) => {
       const postTime = Date.now();
 
-      // --- NEW: Initialize the Queue ---
-      const imageBlocks = post.content.blocks.filter(
-        (b) => b.type === "image" && b.data.file.localFile,
-      );
+      // Helper to safely extract a browser File from either the legacy
+      // `data.file.localFile` shape or `data.upload.localFile` shape.
+      const getLocalFile = (block: unknown): File | undefined => {
+        const b = (block as Record<string, unknown>) || {};
+        if (b["type"] !== "image") return undefined;
+        const data =
+          (b["data"] as Record<string, unknown> | undefined) || undefined;
+        if (!data) return undefined;
+        const fileObj = data["file"] as Record<string, unknown> | undefined;
+        if (fileObj && fileObj["localFile"] instanceof globalThis.File)
+          return fileObj["localFile"] as File;
+        const uploadObj = data["upload"] as Record<string, unknown> | undefined;
+        if (uploadObj && uploadObj["localFile"] instanceof globalThis.File)
+          return uploadObj["localFile"] as File;
+        return undefined;
+      };
 
-      const initialQueue = imageBlocks.map((b) => ({
-        name: b.data.file.localFile.name,
-        status: "waiting" as const,
-        progress: 0,
-      }));
+      const imageBlocks = post.content.blocks.filter((b) => getLocalFile(b));
+
+      const initialQueue = imageBlocks.map((b) => {
+        const f = getLocalFile(b)!;
+        return { name: f.name, status: "waiting" as const, progress: 0 };
+      });
       setUploadQueue(initialQueue);
-      // ---------------------------------
 
-      const slug = `${slugify(post.title)}-${postTime}`;
+      const slug = generateSlug(post.title);
 
       let currentImageIndex = 0;
 
       const updatedBlocks = await Promise.all(
         post.content.blocks.map(async (block) => {
-          if (block.type === "image" && block.data.file.localFile) {
-            const file = block.data.file.localFile;
-            const fileIndex = currentImageIndex++; // Track which queue item this is
+          if (block.type === "image") {
+            const file = getLocalFile(block);
+            if (file) {
+              const fileIndex = currentImageIndex++;
+              const filePath = generateStoragePath(file.name, "blog");
 
-            // Update status to "uploading"
-            setUploadQueue((prev) =>
-              prev.map((item, i) =>
-                i === fileIndex ? { ...item, status: "uploading" } : item,
-              ),
-            );
+              const optimizedImageFile = await optimizeImageBeforeUpload(file);
 
-            const { url, error } = await uploadImage(
-              file,
-              `post-${postTime}/image-${fileIndex}.${file.name.split(".").pop()}`,
-              (percent) => {
-                // --- Update Progress in State ---
+              setUploadQueue((prev) =>
+                prev.map((item, i) =>
+                  i === fileIndex ? { ...item, status: "uploading" } : item,
+                ),
+              );
+
+              const { url, error } = await uploadImage(
+                optimizedImageFile,
+                filePath,
+                "post-images",
+              );
+
+              if (error) {
                 setUploadQueue((prev) =>
                   prev.map((item, i) =>
-                    i === fileIndex ? { ...item, progress: percent } : item,
+                    i === fileIndex ? { ...item, status: "error" } : item,
                   ),
                 );
-              },
-            );
+                throw new Error(`Image upload failed: ${error}`);
+              }
 
-            if (error) throw new Error("Image upload failed");
+              setUploadQueue((prev) =>
+                prev.map((item, i) =>
+                  i === fileIndex
+                    ? { ...item, status: "completed", progress: 100 }
+                    : item,
+                ),
+              );
 
-            // Update status to "completed"
-            setUploadQueue((prev) =>
-              prev.map((item, i) =>
-                i === fileIndex
-                  ? { ...item, status: "completed", progress: 100 }
-                  : item,
-              ),
-            );
+              const bObj = block as unknown as Record<string, unknown>;
+              const dataObj =
+                (bObj["data"] as Record<string, unknown> | undefined) ||
+                undefined;
+              const caption =
+                dataObj && typeof dataObj["caption"] === "string"
+                  ? (dataObj["caption"] as string)
+                  : undefined;
+              return { type: "image", data: { caption, url } } as Block;
+            }
 
-            return {
-              type: block.type,
-              data: { caption: block.data.caption, file: { url } },
-            } as Block;
+            return normalizeBlock(block);
           }
-          return block;
+
+          return normalizeBlock(block);
         }),
       );
 
-      const coverImageUrl = updatedBlocks.find(
-        (block) => block.type === "image" && block.data?.file?.url,
-      )?.data.file.url;
+      const foundImage = updatedBlocks.find((b) =>
+        (b as any)?.type === "image" && (b as any)?.data?.file?.url,
+      ) as any | undefined;
 
-      // 2. Call the Server Action with clean, serializable JSON
-      return await createPostAction({
+      const coverImageUrl = (foundImage?.data?.file?.url as string) || undefined;
+
+      console.log({
         title: post.title,
-        slug: `${slugify(post.title)}-${postTime}`,
+        slug,
         content: { blocks: updatedBlocks },
         excerpt: post.excerpt,
         created_at: new Date(postTime).toISOString(),
         tagIds: post.tags
-          .filter((t) => typeof t.id === "number")
+          .filter((t) => typeof t.id === "string")
+          .map((t) => String(t.id)),
+        cover_image_url: coverImageUrl,
+        author_id: user.id,
+      });
+
+      // 2. Call the Server Action with clean, serializable JSON
+      return await createPostAction({
+        title: post.title,
+        slug,
+        content: { blocks: updatedBlocks },
+        excerpt: post.excerpt,
+        created_at: new Date(postTime).toISOString(),
+        tagIds: post.tags
+          .filter((t) => typeof t.id === "string")
           .map((t) => String(t.id)),
         cover_image_url: coverImageUrl,
         author_id: user.id,

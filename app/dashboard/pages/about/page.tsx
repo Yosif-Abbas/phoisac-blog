@@ -1,12 +1,12 @@
-import PageHydration from "@/components/ui/dashboard/pages/about/PageHydration";
-import PostCardSkeleton from "@/components/ui/skeleton/PostCardSkeleton";
+import PageHydration from "@/components/dashboard/pages/about/PageHydration";
+import EditorFormSkeleton from "@/components/skeleton/EditorFormSkeleton";
 import { Suspense } from "react";
 
 export default function About() {
   return (
     <div className="flex flex-col gap-y-10 h-full w-full pb-10">
       {/* 1. Header Section */}
-      <div className="flex items-baseline justify-between border-b border-[#1F2937] pb-6">
+      <div className="flex items-baseline justify-between border-b border-card-hover pb-6">
         <div className="flex items-baseline gap-x-2">
           <h1 className="text-3xl font-bold text-foreground">
             لوحة تحكم المسؤول
@@ -16,15 +16,7 @@ export default function About() {
         </div>
       </div>
 
-      <Suspense
-        fallback={
-          <div className="flex flex-col">
-            {[1, 2, 3].map((i) => (
-              <PostCardSkeleton key={i} />
-            ))}
-          </div>
-        }
-      >
+      <Suspense fallback={<EditorFormSkeleton />}>
         <PageHydration page_name="about" />
       </Suspense>
     </div>

@@ -4,9 +4,10 @@ import { SlidersHorizontal, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useTags } from "@/hooks/tags/useTags";
+import TagsFilterSkeleton from "../skeleton/blog/TagsFilterSkeleton";
 
 export default function Filter() {
-  const { tags } = useTags();
+  const { tags, isLoading, count } = useTags();
   const [isOpen, setIsOpen] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -59,9 +60,11 @@ export default function Filter() {
     });
   };
 
+  if (isLoading) return <TagsFilterSkeleton />;
+
   return (
     <div
-      className={`flex items-center flex-wrap gap-x-3 gap-y-2 pb-2 transition-opacity ${isPending ? "opacity-70" : "opacity-100"}`}
+      className={`flex items-center flex-wrap gap-x-3 gap-y-2  transition-opacity ${isPending ? "opacity-70" : "opacity-100"}`}
     >
       {/* <button className="flex items-center gap-x-2 px-4 py-2 bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))] rounded-full text-sm font-bold whitespace-nowrap">
         الكل
@@ -85,25 +88,28 @@ export default function Filter() {
           </button>
         );
       })}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`
-            flex items-center gap-x-2 p-2 px-4 rounded-full border transition-all
-            ${
-              isOpen
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-container text-muted-foreground border-card-hover hover:border-muted"
-            }
-          `}
-      >
-        <span className="text-sm font-bold">
-          {isOpen ? "إغلاق" : "كل الوسوم"}
-        </span>
-        <SlidersHorizontal
-          size={18}
-          className={isOpen ? "rotate-90 transition-transform" : ""}
-        />
-      </button>
+
+      {tags && tags.length > 5 && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`
+          flex items-center gap-x-2 p-2 px-4 rounded-full border transition-all
+          ${
+            isOpen
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-container text-muted-foreground border-card-hover hover:border-muted"
+          }
+            `}
+        >
+          <span className="text-sm font-bold">
+            {isOpen ? "إغلاق" : "كل الوسوم"}
+          </span>
+          <SlidersHorizontal
+            size={18}
+            className={isOpen ? "rotate-90 transition-transform" : ""}
+          />
+        </button>
+      )}
     </div>
   );
 }

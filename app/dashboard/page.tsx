@@ -4,7 +4,7 @@ export default async function Dashboard() {
   return (
     <div className="flex flex-col gap-y-10 h-full w-full pb-10">
       {/* 1. Header Section */}
-      <div className="flex items-baseline justify-between border-b border-[#1F2937] pb-6">
+      <div className="flex items-baseline justify-between border-b border-card-hover pb-6">
         <div className="flex items-baseline gap-x-2">
           <h1 className="text-3xl font-bold text-foreground">
             لوحة تحكم المسؤول
@@ -15,7 +15,7 @@ export default async function Dashboard() {
 
       {/* 2. The Hero / Quick Stats */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 p-8 rounded-3xl bg-gradient-to-br from-primary/10 to-transparent border border-[#1F2937] flex flex-col justify-center gap-y-4">
+        <div className="md:col-span-2 p-8 rounded-3xl bg-gradient-to-br from-primary/10 to-transparent border border-card-hover flex flex-col justify-center gap-y-4">
           <h2 className="text-2xl md:text-3xl font-bold">
             ابدأ بكتابة قصيدة جديدة اليوم
           </h2>
@@ -58,7 +58,7 @@ export default async function Dashboard() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="p-6 rounded-2xl bg-container border border-[#1F2937] flex flex-col gap-y-1">
+    <div className="p-6 rounded-2xl bg-container border border-card-hover flex flex-col gap-y-1">
       <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
         {label}
       </span>
@@ -83,9 +83,9 @@ function ActivityItem({
   };
 
   return (
-    <div className="group flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-transparent hover:border-[#1F2937] hover:bg-white/[0.07] transition-all cursor-default">
+    <div className="group flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-transparent hover:border-card-hover hover:bg-white/[0.07] transition-all cursor-default">
       <div className="flex items-center gap-x-4">
-        <div className="p-2 rounded-lg bg-background border border-[#1F2937]">
+        <div className="p-2 rounded-lg bg-background border border-card-hover">
           {icons[type]}
         </div>
         <div className="flex flex-col">

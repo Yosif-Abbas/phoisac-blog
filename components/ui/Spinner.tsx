@@ -1,9 +1,10 @@
-function Spinner({ size = 2 }: { size?: number }) {
+export default function Spinner({ size = 3 }: { size?: number }) {
   return (
     <div className="spinnerContainer">
-      <div className="spinner" style={{ height: `${size}rem`, width: `${size}rem` }}></div>
+      <div
+        className="spinner"
+        style={{ height: `${size}rem`, width: `${size}rem` }}
+      ></div>
     </div>
   );
 }
-
-export default Spinner;

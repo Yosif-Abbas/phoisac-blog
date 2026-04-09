@@ -13,9 +13,9 @@ export async function getServerUser() {
 
   // 2. Get the Profile (No "Check and Create" needed anymore!)
   const { data: profile, error: profileError } = await supabase
-    .from("users")
+    .from("profiles")
     .select("*")
-    .eq("user_id", authUser.id)
+    .eq("id", authUser.id)
     .single();
 
   if (profileError) {
@@ -40,16 +40,16 @@ export async function getQueryClientUser() {
   if (!authUser) return null;
 
   const { data: profile } = await supabase
-    .from("users")
+    .from("profiles")
     .select("*")
     .eq("user_id", authUser.id)
     .single();
 
   if (!profile) return null;
 
-  // Professional Move: Merge Auth metadata with your DB profile
   return {
     ...profile,
+    role: profile.role || "user",
     email: authUser.email,
     avatar_url: authUser.user_metadata.avatar_url,
     full_name: authUser.user_metadata.full_name,

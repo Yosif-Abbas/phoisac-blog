@@ -14,7 +14,7 @@ export default async function PageContentHydration({
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["pages", page_name],
+    queryKey: ["page", page_name],
     queryFn: () => getServerPage({ page_name }),
   });
 

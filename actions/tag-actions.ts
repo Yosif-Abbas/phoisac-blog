@@ -27,7 +27,7 @@ export async function updateTagAction({
   tagId,
   tagName,
 }: {
-  tagId: number;
+  tagId: string;
   tagName: string;
 }) {
   const supabase = await createClient();
@@ -46,7 +46,7 @@ export async function updateTagAction({
   return tag;
 }
 
-export async function deleteTagAction({ tagId }: { tagId: number }) {
+export async function deleteTagAction({ tagId }: { tagId: string }) {
   const supabase = await createClient();
 
   const { error } = await supabase.from("tags").delete().eq("id", tagId);

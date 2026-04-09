@@ -15,9 +15,9 @@ export async function getClientUser() {
 
   // 2. Fetch the corresponding profile from your 'users' table
   const { data: profile, error: profileError } = await supabase
-    .from("users")
+    .from("profiles")
     .select("*")
-    .eq("user_id", authUser.id)
+    .eq("id", authUser.id)
     .single();
 
   if (profileError) {
@@ -39,7 +39,6 @@ export async function loginWithGoogle() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      // This matches the Route Handler we just created
       redirectTo: `${window.location.origin}/auth/callback`,
       queryParams: {
         access_type: "offline",

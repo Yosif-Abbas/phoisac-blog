@@ -1,20 +1,24 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import PostContent from "./postDetails/PostContent";
-import { getPage } from "@/services/client/pages";
+import StructuredContentSkeleton from "../skeleton/StructuredContentSkeleton";
+import StructuredContent from "../postDetails/StructuredContent";
+import QueryErrorRetry from "./QueryErrorRetry";
+import { usePage } from "@/hooks/pages/usePage";
 
 export default function PageContent({ page_name }: { page_name: string }) {
-  const { data: page, isLoading } = useQuery({
-    queryKey: ["pages", page_name],
-    queryFn: () => getPage({ page_name }),
+  const { page, isLoading, isError, refetch, isFetching } = usePage({
+    page_name,
   });
 
-  if (isLoading) return null;
+  if (isLoading) return <StructuredContentSkeleton />;
+  if (isError)
+    return <QueryErrorRetry query={{ isError, refetch, isFetching }} />;
+
+  if (!page) return null;
 
   return (
     <div>
-      <PostContent blocks={page.content.blocks} />
+      <StructuredContent blocks={page.content.blocks} />
     </div>
   );
 }
