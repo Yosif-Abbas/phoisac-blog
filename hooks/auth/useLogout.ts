@@ -10,16 +10,13 @@ export function useLogout() {
 
     onSuccess: () => {
       queryClient.clear();
+
       toast.success("تم تسجيل الخروج");
+
+      window.location.href = "/";
     },
 
     onError: (error: any) => {
-      // 1. Check if the error is actually a Next.js redirect
-      if (error.message === "NEXT_REDIRECT") {
-        return; // Do nothing, let Next.js handle the redirect
-      }
-
-      // 2. Real errors still get toasted
       console.error("Logout error:", error.message);
       toast.error("حدث خطأ أثناء تسجيل الخروج");
     },
