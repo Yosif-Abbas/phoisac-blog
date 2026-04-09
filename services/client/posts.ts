@@ -17,6 +17,7 @@ export async function getPosts({
   let query: any;
 
   if (searchTerm) {
+    console.log(searchTerm);
     query = supabaseClient
       .rpc("search_posts_pro", { search_term: searchTerm })
       .select(
@@ -66,7 +67,10 @@ export async function getPosts({
   const posts = (data as Post[]).map((post) => ({
     ...post,
     tags:
-      post["post_tags"]?.map((pt: PostTag) => pt.tags).filter(Boolean).flat?.() || [],
+      post["post_tags"]
+        ?.map((pt: PostTag) => pt.tags)
+        .filter(Boolean)
+        .flat?.() || [],
     post_tags: undefined,
   }));
 

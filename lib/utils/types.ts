@@ -30,15 +30,36 @@ export const normalizeBlock = (block: unknown): Block => {
       return { type: "quote", data: { text, caption } };
     }
     case "image": {
-      const url =
+      const urlFromUrlKey =
         dataObj && typeof dataObj["url"] === "string"
           ? (dataObj["url"] as string)
           : undefined;
-      const caption =
+
+      const fileObj =
+        dataObj &&
+        typeof dataObj["file"] === "object" &&
+        dataObj["file"] !== null
+          ? (dataObj["file"] as Record<string, unknown>)
+          : undefined;
+
+      const urlFromFileKey =
+        fileObj && typeof fileObj["url"] === "string"
+          ? (fileObj["url"] as string)
+          : undefined;
+
+      const url = urlFromUrlKey ?? urlFromFileKey ?? undefined;
+
+      const captionFromTop =
         dataObj && typeof dataObj["caption"] === "string"
           ? (dataObj["caption"] as string)
           : undefined;
-      return { type: "image", data: { url, caption } };
+      const captionFromFile =
+        fileObj && typeof fileObj["caption"] === "string"
+          ? (fileObj["caption"] as string)
+          : undefined;
+      const caption = captionFromTop ?? captionFromFile ?? undefined;
+
+      return { type: "image", data: { file: { url }, caption } };
     }
     case "poem": {
       const colsRaw =
@@ -72,8 +93,7 @@ export const normalizeBlock = (block: unknown): Block => {
       return { type: "poem", data: { cols, caption, style } };
     }
     default: {
-      const raw =
-        dataObj ?? (typeof data === "string" ? { value: data } : {});
+      const raw = dataObj ?? (typeof data === "string" ? { value: data } : {});
       return { type: type, data: raw as Record<string, unknown> };
     }
   }

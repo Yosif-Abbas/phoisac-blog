@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 import { uploadImage } from "@/services/client/posts";
 import type { Block } from "@/types/cms";
+import { normalizeBlock } from "@/lib/utils/types";
 import { updatePostAction } from "@/actions/post-actions";
 import { useCurrentUser } from "../auth/useCurrentUser";
 import {
@@ -82,14 +83,7 @@ export function useUpdatePost() {
                   ? (dataObj["caption"] as string)
                   : undefined;
 
-              return {
-                ...block,
-                data: {
-                  ...(((block as unknown as Record<string, unknown>)["data"] as Record<string, unknown>) || {}),
-                  url,
-                  caption,
-                },
-              } as Block;
+              return normalizeBlock({ type: "image", data: { url, caption } });
             }
             return block as Block;
           }
@@ -101,16 +95,9 @@ export function useUpdatePost() {
       const newTagIds = (post.tags || [])
         .filter((tag) => typeof tag.id === "string")
         .map((tag) => tag.id as string);
-      const coverImageUrl =
-        updatedBlocks.find((block) => block.type === "image")?.data &&
-        ((
-          (
-            updatedBlocks.find((b) => b.type === "image") as unknown as Record<
-              string,
-              unknown
-            >
-          ).data as Record<string, unknown>
-        )["url"] as string | undefined);
+      const coverImageUrl = (
+        updatedBlocks.find((b) => b.type === "image") as any
+      )?.data?.file?.url as string | undefined;
 
       // 3. Call the Server Action
       return await updatePostAction({

@@ -7,6 +7,7 @@ import {
   generateStoragePath,
   optimizeImageBeforeUpload,
 } from "@/lib/utils/media";
+import { normalizeBlock } from "@/lib/utils/types";
 import type { StructuredContent } from "@/types/cms";
 
 export function useUpdatePage() {
@@ -61,9 +62,10 @@ export function useUpdatePage() {
         }),
       );
 
-      // 6. Send the cleaned content to the Server Action
+      // 6. Normalize blocks and send the cleaned content to the Server Action
+      const normalizedBlocks = updatedBlocks.map((b) => normalizeBlock(b));
       const updateDate = new Date().toISOString();
-      const cleanContent = { ...content, blocks: updatedBlocks };
+      const cleanContent = { ...content, blocks: normalizedBlocks };
 
       return await updatePageAction({
         page_name,

@@ -106,7 +106,7 @@ export function useCreatePost() {
                 dataObj && typeof dataObj["caption"] === "string"
                   ? (dataObj["caption"] as string)
                   : undefined;
-              return { type: "image", data: { caption, url } } as Block;
+              return normalizeBlock({ type: "image", data: { url, caption } });
             }
 
             return normalizeBlock(block);
@@ -116,11 +116,12 @@ export function useCreatePost() {
         }),
       );
 
-      const foundImage = updatedBlocks.find((b) =>
-        (b as any)?.type === "image" && (b as any)?.data?.file?.url,
+      const foundImage = updatedBlocks.find(
+        (b) => (b as any)?.type === "image" && (b as any)?.data?.file?.url,
       ) as any | undefined;
 
-      const coverImageUrl = (foundImage?.data?.file?.url as string) || undefined;
+      const coverImageUrl =
+        (foundImage?.data?.file?.url as string) || undefined;
 
       console.log({
         title: post.title,
