@@ -51,7 +51,7 @@ export default function PostDetails({ slug }: { slug: string }) {
 
   return (
     <div className="flex flex-col w-full">
-      <header className=" mx-auto w-full pt-12 pb-10 px-4 flex flex-col gap-y-8">
+      <header className=" mx-auto w-full pt-8 pb-8 px-4 flex flex-col gap-y-8">
         <BackToBlog />
 
         <h1 className="font-serif text-4xl md:text-6xl font-bold text-foreground leading-tight">

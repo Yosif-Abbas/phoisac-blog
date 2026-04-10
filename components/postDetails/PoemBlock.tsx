@@ -64,13 +64,13 @@ export default function PoemBlock({ data }: { data: PoemBlock["data"] }) {
       {/* Poet/Source Caption */}
       {caption && (
         <figcaption className="mt-12 flex items-center gap-x-4 text-muted-foreground/70">
-          <div className="h-px w-8 bg-slate-300 dark:bg-slate-600"></div>
+          <div className="h-px w-6 lg:w-8 bg-slate-300 dark:bg-slate-600"></div>
 
           <span
-            className="text-sm md:text-base font-medium"
+            className="text-sm md:text-base font-medium text-nowrap"
             dangerouslySetInnerHTML={{ __html: sanitize(caption) }}
           />
-          <div className="h-px w-8 bg-slate-300 dark:bg-slate-600"></div>
+          <div className="h-px w-6 lg:w-8 bg-slate-300 dark:bg-slate-600"></div>
         </figcaption>
       )}
     </figure>

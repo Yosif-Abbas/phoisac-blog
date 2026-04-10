@@ -48,13 +48,14 @@ export default function QuoteBlock({
 
           {data.caption && (
             <div className="flex items-center gap-4 mt-6">
-              <div className="h-px w-10 bg-slate-300 dark:bg-slate-700"></div>
+              <div className="h-px w-6 lg:w-8 bg-slate-300 dark:bg-slate-600"></div>
+
               {/* Editor.js captions can contain formatting, so we sanitize them too */}
               <span
                 className="text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 tracking-wider"
                 dangerouslySetInnerHTML={{ __html: sanitize(data.caption) }}
               />
-              <div className="h-px w-10 bg-slate-300 dark:bg-slate-700"></div>
+              <div className="h-px w-6 lg:w-8 bg-slate-300 dark:bg-slate-600"></div>
             </div>
           )}
         </div>

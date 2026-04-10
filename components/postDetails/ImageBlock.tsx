@@ -51,7 +51,7 @@ export default function ImageBlock({
 
       {data.caption && isMounted && (
         <figcaption
-          className="text-sm md:text-base text-muted-foreground text-center max-w-2xl px-4 py-1"
+          className="text-sm md:text-base text-muted-foreground text-center max-w-2xl px-4 py-1 text-nowrap"
           dangerouslySetInnerHTML={{ __html: sanitize(data.caption) }}
         />
       )}
