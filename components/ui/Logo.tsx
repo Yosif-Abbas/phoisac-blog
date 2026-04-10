@@ -1,10 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 interface Props {
   className?: string;
 }
 export default function Logo({ className }: Props) {
   return (
-    <div
+    <Link
+      href="/"
       className={`w-12 h-12 rounded-full overflow-hidden flex items-center justify-center ${className}`}
     >
       <Image
@@ -15,6 +17,6 @@ export default function Logo({ className }: Props) {
         loading="eager"
         className="object-cover w-full h-full"
       />
-    </div>
+    </Link>
   );
 }

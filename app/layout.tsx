@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://phoisac-blog.vercel.app"), // CRITICAL for relative image paths
   title: {
     template: "%s | Phoisac Eldali",
-    default: "Phoisac Eldali | مدونة أدبية", // Added a descriptor
+    default: "Phoisac Eldali", // Added a descriptor
   },
   description:
     "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية في مدونة Phoisac Eldali.",

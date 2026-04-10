@@ -11,6 +11,7 @@ import Logout from "./Logout";
 import Logo from "../ui/Logo";
 
 export default function Header() {
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const { isAuthenticated, isAdmin } = useCurrentUser();
@@ -37,6 +38,10 @@ export default function Header() {
 
     function handleOutsideClick(e: MouseEvent | TouchEvent) {
       const target = e.target as Node | null;
+
+      if (buttonRef.current && target && buttonRef.current.contains(target)) {
+        return;
+      }
 
       const modalEl = document.querySelector(
         "[data-modal-root]",
@@ -97,6 +102,7 @@ export default function Header() {
 
           {/* Mobile Toggle */}
           <button
+            ref={buttonRef} // 2. Attach the ref here
             className="md:hidden p-2 hover:bg-white/5 rounded-lg"
             onClick={() => setIsOpen(!isOpen)}
           >

@@ -6,10 +6,6 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-type Props = {
-  params: { slug: string };
-};
-
 export async function generateStaticParams() {
   const posts = await getPosts();
 
