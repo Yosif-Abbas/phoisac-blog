@@ -44,8 +44,6 @@ export async function updateTag({
   tagId: string;
   tagName: string;
 }) {
-  console.log(tagId);
-  console.log(tagName);
 
   const { error } = await supabaseClient
     .from("tags")

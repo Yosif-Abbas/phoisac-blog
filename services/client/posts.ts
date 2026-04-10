@@ -17,7 +17,6 @@ export async function getPosts({
   let query: any;
 
   if (searchTerm) {
-    console.log(searchTerm);
     query = supabaseClient
       .rpc("search_posts_pro", { search_term: searchTerm })
       .select(
@@ -93,7 +92,6 @@ export async function createPost({
     .select()
     .single();
 
-  console.log(error);
   if (error) throw new Error(error.message);
 
   if (tags && tags.length > 0) {
@@ -106,7 +104,7 @@ export async function createPost({
             tag_id: tag.id,
           })),
         );
-      console.log(postTagsError);
+      (postTagsError);
 
       if (postTagsError) throw new Error(postTagsError.message);
     }
@@ -294,7 +292,6 @@ export async function getLatestPosts({ limit }: { limit: number }) {
     tags: post["post_tags"]?.map((pt) => pt.tags).flat?.(),
   }));
 
-  console.log(posts);
 
   return posts;
 }

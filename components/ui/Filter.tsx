@@ -7,17 +7,16 @@ import { useTags } from "@/hooks/tags/useTags";
 import TagsFilterSkeleton from "../skeleton/blog/TagsFilterSkeleton";
 
 export default function Filter() {
-  const { tags, isLoading, count } = useTags();
+  const { tags, isLoading } = useTags();
   const [isOpen, setIsOpen] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
   const [isPending, startTransition] = useTransition(); // Add this
 
-  // 1. Add this right under your other states
+
   const [optimisticTags, setOptimisticTags] = useState<string[] | null>(null);
 
-  // 2. Determine which tags to show as "Active"
   const selectedTagNames = searchParams.getAll("tag");
   const currentTags =
     optimisticTags !== null ? optimisticTags : selectedTagNames;
@@ -26,11 +25,13 @@ export default function Filter() {
   const selectedTagCount = selectedTagSet.size;
 
   const sortedTags = tags
-    ? [...tags].sort((a, b) => {
-        const aSelected = selectedTagSet.has(a.name);
-        const bSelected = selectedTagSet.has(b.name);
-        return Number(bSelected) - Number(aSelected);
-      })
+    ? tags
+        .filter((tag) => tag.count > 0)
+        .sort((a, b) => {
+          const aSelected = selectedTagSet.has(a.name);
+          const bSelected = selectedTagSet.has(b.name);
+          return Number(bSelected) - Number(aSelected);
+        })
     : [];
 
   const visibleTags = isOpen
@@ -42,7 +43,6 @@ export default function Filter() {
           .slice(0, Math.max(0, 5 - selectedTagCount)),
       ];
 
-  // 3. Replace your handleTagToggle with this version:
   const handleTagToggle = (tagName: string) => {
     const nextTags = currentTags.includes(tagName)
       ? currentTags.filter((t) => t !== tagName)
@@ -54,7 +54,6 @@ export default function Filter() {
     params.delete("tag");
     nextTags.forEach((t) => params.append("tag", t));
 
-    // WRAP the navigation in startTransition
     startTransition(() => {
       replace(`${pathname}?${params.toString()}`, { scroll: false });
     });

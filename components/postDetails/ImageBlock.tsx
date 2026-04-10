@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { MediaFile } from "@/types/cms";
 import Image from "next/image";
+import DOMPurify from "dompurify";
 
 export default function ImageBlock({
   data,
@@ -10,11 +11,21 @@ export default function ImageBlock({
   data: { file?: MediaFile; caption?: string };
 }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const imageUrl = data?.file?.url || "/elementor-placeholder-image.png";
 
+  const sanitize = (content: string) => {
+    if (typeof window !== "undefined") return DOMPurify.sanitize(content);
+    return content;
+  };
+
   return (
-    <figure className="w-full flex flex-col items-center my-10 gap-y-4">
+    <figure className="w-full flex flex-col items-center my-4 gap-y-4">
       <div
         className={`
           relative w-full flex justify-center rounded-3xl overflow-hidden shadow-lg group transition-colors 
@@ -38,10 +49,10 @@ export default function ImageBlock({
         />
       </div>
 
-      {data.caption && (
+      {data.caption && isMounted && (
         <figcaption
-          className="text-sm md:text-base text-muted-foreground italic text-center max-w-2xl px-4  py-1"
-          dangerouslySetInnerHTML={{ __html: data.caption }}
+          className="text-sm md:text-base text-muted-foreground text-center max-w-2xl px-4 py-1"
+          dangerouslySetInnerHTML={{ __html: sanitize(data.caption) }}
         />
       )}
     </figure>

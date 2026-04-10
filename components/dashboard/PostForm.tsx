@@ -204,7 +204,6 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
       skipTagCheck: boolean = false,
     ) => {
       e.preventDefault();
-      console.log(editorData);
 
       // 1. Validate Title
       if (!title.trim()) {

@@ -8,9 +8,34 @@ import ServerLayoutContent from "@/components/ServerLayoutContent";
 import Loading from "@/components/ui/Loading";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://phoisac-blog.vercel.app"), // CRITICAL for relative image paths
   title: {
     template: "%s | Phoisac Eldali",
-    default: "Phoisac Eldali",
+    default: "Phoisac Eldali | مدونة أدبية", // Added a descriptor
+  },
+  description:
+    "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية في مدونة Phoisac Eldali.",
+  keywords: ["أدب", "رواية", "شعر", "كتابة", "Phoisac Eldali"],
+  authors: [{ name: "Phoisac Eldali" }],
+  openGraph: {
+    type: "website",
+    locale: "ar_EG",
+    url: "https://phoisac-blog.vercel.app",
+    siteName: "Phoisac Eldali",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Phoisac Eldali Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Phoisac Eldali",
+    description: "مدونة أدبية متخصصة في الشعر والرواية.",
+    images: ["/og-image.png"],
   },
 };
 

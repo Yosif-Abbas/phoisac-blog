@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import Modal from "./Modal";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useDeletePost } from "@/hooks/posts/useDeletePost";
 
@@ -26,7 +26,7 @@ export default function DeletePostModal({ title }: ModalTriggerProps) {
     deletePost({ slug });
 
     setIsOpen(false);
-    router.push("/dashboard");
+    router.push("/blog");
   }
 
   return (
@@ -36,7 +36,11 @@ export default function DeletePostModal({ title }: ModalTriggerProps) {
         title="حذف المنشور"
         className="p-3 hover:bg-destructive/20 text-destructive rounded-xl transition-colors flex items-center justify-center gap-x-2"
       >
-        <Trash2 size={20} />
+        {isPending ? (
+          <Loader2 className="text-destructive animate-spin" size={20} />
+        ) : (
+          <Trash2 size={20} />
+        )}
         <span className="lg:hidden">حذف المنشور</span>
       </button>
 

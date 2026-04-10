@@ -1,5 +1,5 @@
 import PostEditTagsHydration from "@/components/dashboard/edit-post/eidt-post-page/PostEditTagsHydration";
-import EditorSkeleton from "@/components/skeleton/EditorSkeleton";
+import EditorFormSkeleton from "@/components/skeleton/EditorFormSkeleton";
 import { Suspense } from "react";
 
 interface PageProps {
@@ -18,7 +18,7 @@ export default async function EditPost({ params }: PageProps) {
         <span className="text-lg text-muted-foreground">/ تعديل منشور</span>
         <span className="text-lg text-muted-foreground">/ {slug}</span>
       </div>
-      <Suspense fallback={<EditorSkeleton />}>
+      <Suspense fallback={<EditorFormSkeleton />}>
         <PostEditTagsHydration />
       </Suspense>
     </div>

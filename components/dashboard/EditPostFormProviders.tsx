@@ -6,8 +6,8 @@ import PostForm, { PostFormHandle } from "./PostForm";
 import { useParams } from "next/navigation";
 import { usePost } from "@/hooks/posts/usePost";
 import { useUpdatePost } from "@/hooks/posts/useUpdatePost";
-import EditorSkeleton from "../skeleton/EditorSkeleton";
 import QueryErrorRetry from "../ui/QueryErrorRetry";
+import EditorFormSkeleton from "../skeleton/EditorFormSkeleton";
 
 export default function EditPostFormProviders() {
   const params = useParams();
@@ -20,7 +20,7 @@ export default function EditPostFormProviders() {
 
   const formRef = useRef<PostFormHandle | null>(null);
 
-  if (isLoading) return <EditorSkeleton />;
+  if (isLoading) return <EditorFormSkeleton />;
 
   if (isError || !post)
     return <QueryErrorRetry query={{ isError, isFetching, refetch }} />;

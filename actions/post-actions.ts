@@ -196,7 +196,6 @@ async function getUniqueTitle(
   baseTitle: string,
   excludePostId?: string,
 ): Promise<string> {
-  console.log(excludePostId);
   // 1. Ask Supabase for any titles that start with our base title
   let query: any = supabase
     .from("posts")

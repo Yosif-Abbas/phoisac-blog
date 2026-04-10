@@ -123,20 +123,6 @@ export function useCreatePost() {
       const coverImageUrl =
         (foundImage?.data?.file?.url as string) || undefined;
 
-      console.log({
-        title: post.title,
-        slug,
-        content: { blocks: updatedBlocks },
-        excerpt: post.excerpt,
-        created_at: new Date(postTime).toISOString(),
-        tagIds: post.tags
-          .filter((t) => typeof t.id === "string")
-          .map((t) => String(t.id)),
-        cover_image_url: coverImageUrl,
-        author_id: user.id,
-      });
-
-      // 2. Call the Server Action with clean, serializable JSON
       return await createPostAction({
         title: post.title,
         slug,

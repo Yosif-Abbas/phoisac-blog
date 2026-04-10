@@ -31,7 +31,6 @@ export default function PageForm({ page_name }: { page_name: string }) {
     const contentToSave = content as unknown as StructuredContent;
 
     if (contentToSave) {
-      console.log(contentToSave);
       updatePage({ page_name, content: contentToSave });
     }
   }

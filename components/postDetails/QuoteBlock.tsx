@@ -1,3 +1,68 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Quote } from "lucide-react";
+import DOMPurify from "dompurify";
+
+export default function QuoteBlock({
+  data,
+}: {
+  data: { text: string; caption?: string };
+}) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const sanitize = (content: string) => {
+    if (typeof window !== "undefined") return DOMPurify.sanitize(content);
+    return content;
+  };
+
+  if (!isMounted) {
+    return <div className="w-full min-h-[150px] my-4 bg-transparent" />;
+  }
+
+  return (
+    <div className="my-4 px-4">
+      <div className="relative max-w-2xl mx-auto p-8 md:p-10 rounded-2xl bg-white/40 backdrop-blur-md  dark:bg-slate-900/40 ">
+        {/* Decorative Quote Icon - Centered at the top */}
+        <div className="absolute -top-5 left-1/2 -translate-x-1/2  p-2 rounded-full  ">
+          <Quote
+            className="fill-slate-400 text-slate-400 opacity-80"
+            size={24}
+          />
+        </div>
+
+        <div className="flex flex-col items-center text-center space-y-6 mt-2">
+          {/* Using CSS pseudo-elements for quotes so they wrap the HTML cleanly.
+            Using « » which are standard in professional Arabic typography.
+          */}
+          <div
+            className="font-serif text-xl lg:text-2xl text-slate-800 dark:text-slate-100 leading-relaxed 
+                       before:content-['«'] before:mr-1 before:text-slate-400 
+                       after:content-['»'] after:ml-1 after:text-slate-400"
+            dangerouslySetInnerHTML={{ __html: sanitize(data.text) }}
+          />
+
+          {data.caption && (
+            <div className="flex items-center gap-4 mt-6">
+              <div className="h-px w-10 bg-slate-300 dark:bg-slate-700"></div>
+              {/* Editor.js captions can contain formatting, so we sanitize them too */}
+              <span
+                className="text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 tracking-wider"
+                dangerouslySetInnerHTML={{ __html: sanitize(data.caption) }}
+              />
+              <div className="h-px w-10 bg-slate-300 dark:bg-slate-700"></div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // import { Block } from "@/types/post";
 // import { Quote } from "lucide-react";
 
@@ -28,39 +93,3 @@
 //     </div>
 //   );
 // }
-
-import { Quote } from "lucide-react";
-
-export default function QuoteBlock({
-  data,
-}: {
-  data: { text: string; caption?: string };
-}) {
-  const html = "”" + data.text + "“";
-
-  return (
-    <div className="my-4 px-4">
-      <div className="relative max-w-2xl mx-auto p-8 rounded-2xl bg-white/40 backdrop-blur-md shadow-xl shadow-slate-200/50 dark:bg-slate-900/40 dark:shadow-none">
-        {/* Decorative Quote Icon */}
-        <Quote className=" fill-slate-500 text-slate-500" size={20} />
-
-        <div className="flex flex-col items-center text-center space-y-6">
-          <p
-            className="font-serif text-xl lg:text-2xl italic text-slate-800 dark:text-slate-100 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-
-          {data.caption && (
-            <div className="flex items-center gap-3">
-              <div className="h-px w-8 bg-slate-300 dark:bg-slate-600"></div>
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400 tracking-wider">
-                {data.caption}
-              </span>
-              <div className="h-px w-8 bg-slate-300 dark:bg-slate-600"></div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}

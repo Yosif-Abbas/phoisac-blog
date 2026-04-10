@@ -71,7 +71,10 @@ export async function getServerPosts({
   const posts = (data as Post[]).map((post) => ({
     ...post,
     tags:
-      post["post_tags"]?.map((pt: any) => pt.tags).filter(Boolean).flat?.() || [],
+      post["post_tags"]
+        ?.map((pt: any) => pt.tags)
+        .filter(Boolean)
+        .flat?.() || [],
     post_tags: undefined,
   }));
 
@@ -87,7 +90,7 @@ export async function getServerPostBySlug(slug: string) {
   const { data, error } = await supabase
     .from("posts")
     .select(
-      `id,created_at,updated_at,title,slug,excerpt,content,view_count,post_tags(tags(id,name))`,
+      `id,created_at,updated_at,title,slug,excerpt,content,view_count,cover_image_url,post_tags(tags(id,name))`,
     )
     .eq("slug", slug)
     .single();
@@ -97,9 +100,6 @@ export async function getServerPostBySlug(slug: string) {
     return null;
   }
 
-  console.log(data.post_tags);
-
-  // Clean up the nesting from the join and return an array of Tag objects
   const tags =
     data["post_tags"]
       ?.map((pt: any) => pt.tags)
@@ -131,6 +131,18 @@ export async function getLatestPosts({ limit }: { limit: number }) {
 
     tags: post["post_tags"]?.map((pt) => pt.tags).flat?.(),
   }));
+
+  return posts;
+}
+
+export async function getPosts() {
+  const supabase = await createClient();
+  const { data: posts, error } = await supabase.from("posts").select("slug"); // We only need the slug for the params
+
+  if (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
 
   return posts;
 }

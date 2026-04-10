@@ -1,5 +1,5 @@
 import CreatePostTagsHydration from "@/components/dashboard/create-post/CreatePostTagsHydration";
-import EditorSkeleton from "@/components/skeleton/EditorSkeleton";
+import EditorFormSkeleton from "@/components/skeleton/EditorFormSkeleton";
 import { Suspense } from "react";
 
 export default function CreatePost() {
@@ -13,7 +13,7 @@ export default function CreatePost() {
         <span className="text-lg text-muted-foreground">/ كتابة منشور</span>
       </div>
 
-      <Suspense fallback={<EditorSkeleton />}>
+      <Suspense fallback={<EditorFormSkeleton />}>
         <CreatePostTagsHydration />
       </Suspense>
     </div>
