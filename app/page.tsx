@@ -10,7 +10,7 @@ export default async function Home() {
       <Hero />
 
       <section className="flex flex-col gap-y-12">
-        <div className="flex items-baseline justify-between">
+        <div className="flex items-baseline justify-between ">
           <h2 className="text-3xl font-bold">آخر المنشورات</h2>
           <Link href="/blog" className="text-sm text-muted  hover:underline">
             عرض الكل

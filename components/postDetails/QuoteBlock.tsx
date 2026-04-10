@@ -25,8 +25,8 @@ export default function QuoteBlock({
   }
 
   return (
-    <div className="my-4 px-4">
-      <div className="relative max-w-2xl mx-auto p-8 md:p-10 rounded-2xl bg-white/40 backdrop-blur-md  dark:bg-slate-900/40 ">
+    <div className="my-4 md:px-4">
+      <div className="relative max-w-2xl mx-auto p-8 md:p-6 rounded-2xl bg-white/40 backdrop-blur-md  dark:bg-slate-900/40 ">
         {/* Decorative Quote Icon - Centered at the top */}
         <div className="absolute -top-5 left-1/2 -translate-x-1/2  p-2 rounded-full  ">
           <Quote
@@ -35,7 +35,7 @@ export default function QuoteBlock({
           />
         </div>
 
-        <div className="flex flex-col items-center text-center space-y-6 mt-2">
+        <div className="flex flex-col items-center text-center space-y-6 ">
           {/* Using CSS pseudo-elements for quotes so they wrap the HTML cleanly.
             Using « » which are standard in professional Arabic typography.
           */}

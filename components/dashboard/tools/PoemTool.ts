@@ -111,41 +111,84 @@ export default class PoemTool implements BlockTool {
 
   createLineNode(sadrText = "", ajuuzText = "") {
     const row = document.createElement("div");
-    row.classList.add("grid", "py-2", "relative", "group/line");
+    row.classList.add("py-2", "relative", "group/line", "w-full");
 
-    // Apply layout based on style
+    // Apply the "Criss Cross" Flexbox layout based on style
     if (this.data.style === "classic") {
-      row.classList.add("grid-cols-2", "gap-x-12");
+      row.classList.add(
+        "flex",
+        "flex-col",
+        "md:flex-row",
+        "md:justify-between",
+        "items-stretch",
+        "md:items-center",
+        "gap-y-2",
+        "md:gap-y-0",
+        "md:gap-x-12",
+      );
     } else {
-      row.classList.add("grid-cols-1", "max-w-prose", "mx-auto");
+      row.classList.add(
+        "flex",
+        "flex-col",
+        "items-center",
+        "max-w-prose",
+        "mx-auto",
+      );
     }
 
     const sadr = document.createElement("div");
     const ajuuz = document.createElement("div");
 
+    // Base shared classes for both inputs
     [sadr, ajuuz].forEach((el, index) => {
       el.contentEditable = "true";
       el.classList.add(
         "outline-none",
         "text-xl",
         "font-serif",
-        "text-center",
         "border-b",
         "border-transparent",
         "focus:border-primary/20",
+        "transition-colors",
       );
       el.setAttribute(
         "data-placeholder",
-        index === 0 ? "اكتب هنا..." : "العجز...",
+        index === 0 ? "الشطر الأول..." : "العجز...", // Updated placeholder
       );
     });
+
+    // Apply specific alignments and widths based on style
+    if (this.data.style === "classic") {
+      // Sadr (First half) - Right aligned, pushed right on mobile
+      sadr.classList.add(
+        "flex-1",
+        "text-right",
+        "self-start",
+        "w-[90%]",
+        "md:w-auto",
+        "md:text-justify",
+      );
+
+      // Ajuuz (Second half) - Left aligned, pushed left on mobile
+      ajuuz.classList.add(
+        "flex-1",
+        "text-left",
+        "self-end",
+        "w-[90%]",
+        "md:w-auto",
+        "md:text-justify",
+      );
+    } else {
+      // Modern (Single line) - Centered
+      sadr.classList.add("w-full", "text-center");
+    }
 
     sadr.innerHTML = sadrText;
     ajuuz.innerHTML = ajuuzText;
 
     row.appendChild(sadr);
 
-    // Only show the second input if it's a classic poem
+    // Only append the second input if it's a classic poem
     if (this.data.style === "classic") {
       row.appendChild(ajuuz);
     }

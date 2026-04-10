@@ -224,7 +224,7 @@ secondary: #7AA2FF */
 .ce-block__content {
   @apply bg-white/5 dark:bg-[#1F2937]/20 
          border border-[#E5E7EB] dark:border-card-hover 
-         rounded-2xl p-6 mb-6 
+         rounded-2xl p-3 md:p-6 mb-4 md:mb-6 
          transition-all duration-300;
 
   max-width: 100% !important;
@@ -243,7 +243,7 @@ secondary: #7AA2FF */
 }
 
 .ce-toolbar__actions {
-  @apply right-[91%];
+  @apply right-0 md:right-[91%] top-2 md:top-0;
 }
 
 .ce-toolbar__plus {

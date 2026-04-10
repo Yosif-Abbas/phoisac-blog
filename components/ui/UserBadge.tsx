@@ -13,7 +13,7 @@ export default function UserBadge({ date, view_count }: Props) {
   const { isAdmin } = useCurrentUser();
 
   return (
-    <div className="flex items-center gap-x-2 text-sm text-muted-foreground">
+    <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
       <span>بقلم</span>
       <span className="font-bold text-foreground">فـويـزاك الـدالي</span>
       <span className="opacity-30">•</span>
