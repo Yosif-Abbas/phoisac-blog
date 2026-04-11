@@ -1,16 +1,12 @@
-import { logoutServerAction } from "@/actions/auth-actions";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { logout as logoutAPI } from "@/services/client/auth";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export function useLogout() {
-  const queryClient = useQueryClient();
-
   const { mutate: logout, isPending } = useMutation({
-    mutationFn: () => logoutServerAction(),
+    mutationFn: () => logoutAPI(),
 
     onSuccess: () => {
-      queryClient.clear();
-
       toast.success("تم تسجيل الخروج");
 
       window.location.href = "/";
