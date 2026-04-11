@@ -51,7 +51,7 @@ export default function PostDetails({ slug }: { slug: string }) {
 
   return (
     <div className="flex flex-col w-full">
-      <header className=" mx-auto w-full pt-8 pb-8 px-4 flex flex-col gap-y-8">
+      <header className=" mx-auto w-full pt-8 pb-8 md:px-4 flex flex-col gap-y-8">
         <BackToBlog />
 
         <h1 className="font-serif text-4xl md:text-6xl font-bold text-foreground leading-tight">
@@ -59,7 +59,11 @@ export default function PostDetails({ slug }: { slug: string }) {
         </h1>
 
         <div className="flex flex-col justify-between gap-y-6 border-y border-[#E5E7EB] dark:border-card-hover py-6">
-          <UserBadge date={post.created_at} view_count={post.view_count} />
+          <UserBadge
+            date={post.created_at}
+            updatedAt={post.updated_at}
+            view_count={post.view_count}
+          />
 
           <div className="flex flex-wrap gap-2">
             {(

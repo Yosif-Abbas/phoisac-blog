@@ -299,10 +299,11 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
             </div>
 
             {/* 2. The Writing Canvas */}
-            <div className="max-w-4xl mx-auto w-full flex flex-col gap-y-4  mt-4">
-              <div className="group relative bg-white/5 dark:bg-[#1F2937]/20 border border-[#E5E7EB] dark:border-card-hover rounded-3xl p-8  transition-all duration-300 focus-within:border-primary/40 focus-within:bg-white/10 dark:focus-within:bg-[#1F2937]/40 shadow-sm focus-within:shadow-md">
-                {/* Optional: A small "Label" to make it feel like a real form */}
-                <span className="absolute -top-3 right-8 bg-background px-2 text-xs font-medium text-muted-foreground/60 tracking-widest uppercase">
+            <div className="max-w-4xl mx-auto w-full flex flex-col gap-y-4 px-4 md:px-0 mt-4">
+              {/* Title Container */}
+              <div className="group relative bg-white/5 dark:bg-[#1F2937]/20 border border-[#E5E7EB] dark:border-card-hover rounded-2xl md:rounded-3xl p-5 md:p-8 transition-all duration-300 focus-within:border-primary/40 focus-within:bg-white/10 dark:focus-within:bg-[#1F2937]/40 shadow-sm focus-within:shadow-md">
+                {/* Label: Hidden or smaller on mobile to keep the header clean */}
+                <span className="absolute -top-2.5 right-4 md:right-8 bg-background px-2 text-[10px] md:text-xs font-medium text-muted-foreground/60 tracking-widest uppercase">
                   العنوان الرئيسي
                 </span>
 
@@ -311,18 +312,24 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="عنوان المنشور..."
-                  className="w-full font-serif text-5xl md:text-6xl font-bold bg-transparent border-none outline-none placeholder:text-muted-foreground/20 focus:ring-0 px-0 text-start leading-tight"
+                  // Responsive font sizes: text-3xl on mobile, 5xl/6xl on desktop
+                  className="w-full font-serif text-3xl md:text-5xl lg:text-6xl font-bold bg-transparent border-none outline-none placeholder:text-muted-foreground/20 focus:ring-0 px-0 text-start leading-tight"
                 />
               </div>
-              <div className="group relative bg-white/5 dark:bg-[#1F2937]/20 border border-[#E5E7EB] dark:border-card-hover rounded-2xl p-4  transition-all duration-300 focus-within:border-primary/40 focus-within:bg-white/10 dark:focus-within:bg-[#1F2937]/40 shadow-sm focus-within:shadow-md">
-                <input
+
+              {/* Excerpt Container */}
+              <div className="group relative bg-white/5 dark:bg-[#1F2937]/20 border border-[#E5E7EB] dark:border-card-hover rounded-xl md:rounded-2xl p-4 transition-all duration-300 focus-within:border-primary/40 focus-within:bg-white/10 dark:focus-within:bg-[#1F2937]/40 shadow-sm focus-within:shadow-md">
+                <textarea
+                  rows={2}
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder="ملخص قصير (سيتم توليد ملخص تلقائي من الفقرة الأولى إذا تركته فارغًا)"
-                  className="w-full text-lg bg-transparent border-none outline-none placeholder:text-muted-foreground/20 focus:ring-0 px-0 text-start leading-tight"
+                  placeholder="ملخص قصير..."
+                  className="w-full text-base md:text-lg bg-transparent border-none outline-none placeholder:text-muted-foreground/20 focus:ring-0 px-0 text-start leading-relaxed resize-none"
                 />
               </div>
-              <div className="prose prose-stone dark:prose-invert max-w-none w-full mt-6">
+
+              {/* Editor Wrapper */}
+              <div className="prose prose-stone dark:prose-invert max-w-none w-full mt-4 md:mt-6 px-1 md:px-0">
                 <Editor
                   key={editorKey}
                   ref={editorRef}

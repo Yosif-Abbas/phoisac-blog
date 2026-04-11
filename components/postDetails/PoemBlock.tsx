@@ -47,7 +47,7 @@ export default function PoemBlock({ data }: { data: PoemBlock["data"] }) {
             <p
               className={
                 isClassic
-                  ? "flex-1 text-right self-start w-[90%] md:w-auto md:text-justify"
+                  ? "flex-1 text-right self-start w-[90%] md:w-auto md:text-center"
                   : "w-full"
               }
               dangerouslySetInnerHTML={{ __html: sanitize(line.sadr ?? "") }}
@@ -63,7 +63,7 @@ export default function PoemBlock({ data }: { data: PoemBlock["data"] }) {
             {/* The Second Half (Ajuuz) - Criss Crosses to Bottom Left on Mobile */}
             {isClassic && line.ajuuz && (
               <p
-                className="flex-1 text-left self-end w-[90%] md:w-auto md:text-justify"
+                className="flex-1 text-left self-end w-[90%] md:w-auto md:text-center"
                 dangerouslySetInnerHTML={{ __html: sanitize(line.ajuuz ?? "") }}
               />
             )}

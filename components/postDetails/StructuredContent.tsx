@@ -15,7 +15,7 @@ import PoemBlock from "./PoemBlock";
 
 export default function StructuredContent({ blocks }: StructuredContentType) {
   return (
-    <article className=" w-full flex flex-col gap-y-4 md:gap-y-8 py-6 px-4">
+    <article className=" w-full flex flex-col gap-y-4 md:gap-y-8 py-6 md:px-4">
       {blocks.map((block: Block, index) => {
         switch (block.type) {
           case "paragraph":

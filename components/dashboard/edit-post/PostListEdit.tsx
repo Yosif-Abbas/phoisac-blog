@@ -62,7 +62,7 @@ export default function PostListEdit() {
 
   return (
     <div className="flex flex-col">
-      <ul className="">
+      <ul className="flex flex-col gap-y-4">
         {data.pages.map((page, i) => (
           <React.Fragment key={i}>
             {page.posts.map((post) => (

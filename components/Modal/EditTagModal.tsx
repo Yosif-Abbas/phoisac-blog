@@ -37,11 +37,11 @@ export default function EditTagModal({ title, tag }: ModalTriggerProps) {
         title={title}
       >
         {isPending ? (
-          <Loader2 className="text-muted-foreground animate-spin " size={20} />
+          <Loader2 className="text-foreground animate-spin " size={20} />
         ) : (
           <Pencil
             size={16}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            className="lg:opacity-0 group-hover:opacity-100 transition-opacity"
           />
         )}
       </button>

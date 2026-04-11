@@ -111,9 +111,14 @@ export default class PoemTool implements BlockTool {
 
   createLineNode(sadrText = "", ajuuzText = "") {
     const row = document.createElement("div");
-    row.classList.add("py-2", "relative", "group/line", "w-full");
+    row.classList.add(
+      "py-2",
+      "relative",
+      "group/line",
+      "w-full",
+      "poem-line-row",
+    );
 
-    // Apply the "Criss Cross" Flexbox layout based on style
     if (this.data.style === "classic") {
       row.classList.add(
         "flex",
@@ -153,7 +158,7 @@ export default class PoemTool implements BlockTool {
       );
       el.setAttribute(
         "data-placeholder",
-        index === 0 ? "الشطر الأول..." : "العجز...", // Updated placeholder
+        index === 0 ? "الشطر الأول..." : "الشطر الثاني...", // Updated placeholder
       );
     });
 
@@ -243,7 +248,7 @@ export default class PoemTool implements BlockTool {
   }
 
   save(blockContent: HTMLElement): PoemData {
-    const rows = blockContent.querySelectorAll(".grid");
+    const rows = blockContent.querySelectorAll(".poem-line-row");
     const caption = blockContent.querySelector(".caption") as HTMLElement;
 
     const cols: PoemLine[] = [];
@@ -251,7 +256,7 @@ export default class PoemTool implements BlockTool {
       const sadr = row.querySelector("div:first-child") as HTMLElement;
       const ajuuz = row.querySelector("div:nth-child(2)") as HTMLElement;
 
-      if (sadr.innerText.trim()) {
+      if (sadr && sadr.innerText.trim()) {
         cols.push({
           sadr: sadr.innerHTML,
           ajuuz:
@@ -263,7 +268,7 @@ export default class PoemTool implements BlockTool {
     return {
       style: this.data.style,
       cols,
-      caption: caption.innerHTML,
+      caption: caption?.innerHTML || "",
     };
   }
 }

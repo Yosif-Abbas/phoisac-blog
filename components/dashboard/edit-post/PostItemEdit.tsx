@@ -2,26 +2,29 @@
 
 import { formatDate } from "@/lib/utils/formatDate";
 import type { Post } from "@/types/cms";
-import { Pencil } from "lucide-react";
+import { Pencil, Calendar } from "lucide-react";
 import Link from "next/link";
 
 export default function PostItemEdit({ post }: { post: Post }) {
   return (
-    <li className="list-none group">
-      <div className="relative block p-6 rounded-2xl border border-transparent hover:border-[#E5E7EB] dark:hover:border-card-hover hover:bg-container/50 transition-all duration-300 shadow-sm hover:shadow-md">
-        <div className="flex items-start justify-between">
-          {/* Title: The Hero */}
-
-          <div className="flex flex-col gap-y-3 ">
-            <Link href={`/blog/${post.slug}`} className="hover:underline">
-              <h2 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors leading-snug">
+    <li className="list-none group ">
+      <div className="relative p-5 md:p-6 rounded-2xl border border-card-hover/50 hover:border-primary/30 bg-card/30 hover:bg-card/80 transition-all duration-300 shadow-sm hover:shadow-lg">
+        {/* Layout: Vertical stack on mobile, Row on Large */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          {/* Left Side: Content */}
+          <div className="flex-1 space-y-3">
+            <Link
+              href={`/blog/${post.slug}`}
+              className="inline-block hover:underline"
+            >
+              <h2 className="text-xl md:text-2xl font-bold text-foreground group-hover:text-primary transition-colors leading-tight ">
                 {post.title}
               </h2>
             </Link>
 
-            <div className="flex items-center justify-between  uppercase tracking-wider font-medium">
+            <div className="flex items-center gap-x-2 text-sm text-muted-foreground/80 font-medium">
+              <Calendar size={14} className="text-primary/60" />
               <time
-                className="text-muted-foreground opacity-80 text-nowrap self-start "
                 title={
                   post.created_at
                     ? new Date(post.created_at).toLocaleString("ar-EG")
@@ -34,13 +37,21 @@ export default function PostItemEdit({ post }: { post: Post }) {
             </div>
           </div>
 
-          {/* Bottom Row: Interaction Hint */}
+          {/* Right Side: The Action Button */}
           <Link
             href={`/dashboard/edit-post/${post.slug}`}
-            className="flex lg:hidden group-hover:flex bg-primary text-primary-foreground px-4 py-2 rounded-xl font-bold hover:bg-primary/90 transition-all items-center gap-x-2"
+            className="
+              flex items-center justify-center gap-x-2 
+              bg-primary text-primary-foreground 
+              h-12 md:h-11 px-6 
+              rounded-xl font-bold 
+              hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] 
+              transition-all duration-200
+              opacity-100 md:opacity-0 md:group-hover:opacity-100
+            "
           >
             <Pencil size={18} />
-            <span className="text-nowrap">تعديل المنشور</span>
+            <span className="text-sm md:text-base">تعديل المنشور</span>
           </Link>
         </div>
       </div>

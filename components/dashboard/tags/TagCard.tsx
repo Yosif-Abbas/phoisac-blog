@@ -14,10 +14,12 @@ export default function TagCard({ tag }: { tag: Tag }) {
           <TagIcon size={18} className="text-primary" />
         </div>
         <div className="flex flex-col">
-          <span className="font-bold text-foreground">{name}</span>
-          <span className="text-xs text-muted-foreground">
-            {countNum} {" "}
-            {(countNum > 1 && countNum < 11) || countNum === 0 ? "منشورات" : "منشور"}
+          <span className="font-bold text-foreground text-nowrap">{name}</span>
+          <span className="text-xs text-muted-foreground text-nowrap">
+            {countNum}{" "}
+            {(countNum > 1 && countNum < 11) || countNum === 0
+              ? "منشورات"
+              : "منشور"}
           </span>
         </div>
       </div>

@@ -33,7 +33,7 @@ export default function DeleteTagModal({ title, tag }: ModalTriggerProps) {
           <Loader2 className="text-destructive animate-spin" size={20} />
         ) : (
           <Trash2
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            className="lg:opacity-0 group-hover:opacity-100 transition-opacity"
             size={16}
           />
         )}
