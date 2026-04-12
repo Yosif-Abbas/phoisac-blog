@@ -46,8 +46,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logo.jpg",
-        width: 400,
-        height: 400,
+        width: 300,
+        height: 300,
         alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
       },
     ],
@@ -56,12 +56,12 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Phoisac Eldali | مدونة أدبية",
-    description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية الحصرية.",
+    description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية.",
     images: [
       {
         url: "/logo.jpg",
-        width: 400,
-        height: 400,
+        width: 300,
+        height: 300,
         alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
       },
     ],
