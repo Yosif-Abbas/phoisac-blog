@@ -33,8 +33,9 @@ export async function generateMetadata({
 
   if (!post) return { title: "Post Not Found" };
 
-  const ogUrl = new URL("https://www.phoisac.online/api/og");
-  ogUrl.searchParams.set("image", post.cover_image_url);
+  const supabaseUrl = post.cover_image_url;
+
+  const cloudinaryThumbnail = `https://res.cloudinary.com/demo/image/fetch/ar_1:1,c_fill,g_auto,w_300/f_auto/${supabaseUrl}`;
 
   return {
     title: post.title,
@@ -47,7 +48,11 @@ export async function generateMetadata({
       description: post.excerpt,
 
       images: [
-        { url: ogUrl.toString(), width: 300, height: 300 },
+        {
+          url: cloudinaryThumbnail, // This will be a perfect 300x300 square
+          width: 300,
+          height: 300,
+        },
         {
           url: "/logo.jpg",
           width: 300,
