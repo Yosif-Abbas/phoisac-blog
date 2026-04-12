@@ -1,8 +1,6 @@
 import { ImageResponse } from "next/og";
 
-// CRITICAL: This makes the function start instantly
-export const runtime = "edge";
-
+// We removed 'runtime' and 'dynamic' completely to satisfy Turbopack
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -23,7 +21,6 @@ export async function GET(request: Request) {
           justifyContent: "center",
         }}
       >
-        {/* Use a standard img tag; next/og will fetch it */}
         <img
           src={imageUrl}
           style={{
@@ -39,7 +36,6 @@ export async function GET(request: Request) {
       },
     );
   } catch (e) {
-    console.error(e);
     return new Response("Failed to generate OG image", { status: 500 });
   }
 }
