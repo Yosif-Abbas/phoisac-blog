@@ -46,8 +46,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logo.jpg",
-        width: 500,
-        height: 500,
+        width: 400,
+        height: 400,
         alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
       },
     ],
@@ -60,8 +60,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logo.jpg",
-        width: 500,
-        height: 500,
+        width: 400,
+        height: 400,
         alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
       },
     ],
