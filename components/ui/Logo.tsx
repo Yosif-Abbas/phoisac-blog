@@ -13,7 +13,7 @@ export default function Logo({ className }: Props) {
       className={`relative w-12 h-12 rounded-full overflow-hidden flex items-center justify-center hover:opacity-90 transition-opacity ${className}`}
     >
       <Image
-        src="/phoisac.jpeg"
+        src="/logo.jpeg"
         alt="Phoisac Eldali Logo"
         width={96}
         height={96}
