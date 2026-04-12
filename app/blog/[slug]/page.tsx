@@ -33,7 +33,8 @@ export async function generateMetadata({
 
   if (!post) return { title: "Post Not Found" };
 
-  const socialImage = `${post?.cover_image_url}?width=300&height=300&resize=contain`;
+  const ogUrl = new URL("https://www.phoisac.online/api/og");
+  ogUrl.searchParams.set("image", post.cover_image_url);
 
   return {
     title: post.title,
@@ -46,11 +47,7 @@ export async function generateMetadata({
       description: post.excerpt,
 
       images: [
-        {
-          url: post.cover_image_url,
-          width: 300,
-          height: 300,
-        },
+        { url: ogUrl.toString(), width: 300, height: 300 },
         {
           url: "/logo.jpg",
           width: 300,
