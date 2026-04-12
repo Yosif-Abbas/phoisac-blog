@@ -35,8 +35,8 @@ export async function generateMetadata({
 
   const supabaseUrl = post.cover_image_url;
 
-  const cleanUrl = supabaseUrl.replace("https://", "");
-  const thumbnailCard = `https://wsrv.nl/?url=${cleanUrl}&w=300&h=300&fit=cover&a=center`;
+  const encodedSupabaseUrl = encodeURIComponent(supabaseUrl);
+  const thumbnailCard = `https://wsrv.nl/?url=${encodedSupabaseUrl}&w=300&h=300&fit=cover&a=center`;
 
   return {
     title: post.title,
