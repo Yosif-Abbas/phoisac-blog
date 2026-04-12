@@ -41,13 +41,13 @@ export const metadata: Metadata = {
     url: "https://www.phoisac.online",
     siteName: "Phoisac Eldali",
     title: "Phoisac Eldali | مدونة أدبية",
-    description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية الحصرية.",
+    description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية. ",
 
     images: [
       {
         url: "/logo.jpg",
-        width: 300,
-        height: 300,
+        width: 500,
+        height: 500,
         alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
       },
     ],
@@ -60,8 +60,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logo.jpg",
-        width: 300,
-        height: 300,
+        width: 500,
+        height: 500,
         alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
       },
     ],
