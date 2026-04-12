@@ -8,35 +8,60 @@ import ServerLayoutContent from "@/components/ServerLayoutContent";
 import Loading from "@/components/ui/Loading";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.phoisac.online/"), // CRITICAL for relative image paths
+  metadataBase: new URL("https://www.phoisac.online/"),
+
   title: {
     template: "%s | Phoisac Eldali",
-    default: "Phoisac Eldali", // Added a descriptor
+    default: "Phoisac Eldali | مدونة أدبية للشعر والرواية", // Professional default title
   },
+
   description:
-    "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية في مدونة Phoisac Eldali.",
-  keywords: ["أدب", "رواية", "شعر", "كتابة", "Phoisac Eldali"],
-  authors: [{ name: "Phoisac Eldali" }],
+    "مدونة أدبية متخصصة تضم مجموعة فريدة من القصائد الشعرية، والروايات العميقة، والنصوص الإبداعية. استكشف عالم المعاني والكلمات مع الكاتب Phoisac Eldali.",
+
+  keywords: [
+    "أدب",
+    "رواية",
+    "شعر",
+    "قصائد",
+    "كتابة إبداعية",
+    "نصوص أدبية",
+    "أدب عربي",
+    "Phoisac Eldali",
+    "فويزاك الدالي",
+  ],
+
+  authors: [{ name: "Phoisac Eldali", url: "https://www.phoisac.online" }],
+  creator: "Phoisac Eldali",
+  publisher: "Phoisac Eldali",
+  category: "Literature",
+
   openGraph: {
     type: "website",
     locale: "ar_EG",
     url: "https://www.phoisac.online/",
     siteName: "Phoisac Eldali",
+    title: "Phoisac Eldali | مدونة أدبية",
+    description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية الحصرية.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Phoisac Eldali Logo",
+        alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
       },
     ],
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "Phoisac Eldali",
-    description: "مدونة أدبية متخصصة في الشعر والرواية.",
-    images: ["/og-image.png"],
+    title: "Phoisac Eldali | مدونة أدبية",
+    description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية الحصرية.",
+    images: ["/og-image.jpg"],
   },
+
+  // other: {
+  //   "fb:app_id": "YOUR_FACEBOOK_APP_ID_HERE", // Leave empty or remove if you don't use Facebook Insights
+  // },
 };
 
 const IBMPlexSansArabic = IBM_Plex_Sans_Arabic({
