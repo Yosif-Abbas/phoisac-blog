@@ -7,14 +7,21 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const posts = await getPosts();
+  try {
+    const posts = await getPosts();
 
+    // If we have posts, map them normally
+    if (posts && posts.length > 0) {
+      return posts.map((post) => ({
+        slug: post.slug,
+      }));
+    }
 
-  if (!posts || posts.length === 0) return [];
-
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+    return [{ slug: "placeholder-to-fix-build" }];
+  } catch (error) {
+    console.error("Build-time fetch error:", error);
+    return [{ slug: "placeholder-to-fix-build" }];
+  }
 }
 
 export async function generateMetadata({
