@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/logo.jpg",
         width: 736,
         height: 736,
         alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Phoisac Eldali | مدونة أدبية",
     description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية الحصرية.",
-    images: ["/og-image.jpg"],
+    images: ["/logo.jpg"],
   },
 
   // other: {
