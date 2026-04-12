@@ -11,6 +11,11 @@ export default function PostItem({ post }: { post: Post }) {
   const selectedTagNames = searchParams.getAll("tag");
   const selectedTagSet = new Set(selectedTagNames);
 
+  const updatedAt = String(post.updated_at);
+  const createdAt = String(post.created_at);
+
+  const isModified = Boolean(post.updated_at);
+
   return (
     <li className="list-none group">
       <Link
@@ -41,13 +46,13 @@ export default function PostItem({ post }: { post: Post }) {
             <time
               className="text-muted-foreground opacity-80 text-nowrap self-start "
               title={
-                post.created_at
-                  ? new Date(post.created_at).toLocaleString("ar-EG")
-                  : ""
+                isModified
+                  ? new Date(String(updatedAt)).toLocaleString("ar-EG")
+                  : new Date(String(createdAt)).toLocaleString("ar-EG")
               }
               suppressHydrationWarning
             >
-              {formatDate(post.created_at)}
+              {isModified ? formatDate(updatedAt) : formatDate(createdAt)}
             </time>
           </div>
 
@@ -64,7 +69,7 @@ export default function PostItem({ post }: { post: Post }) {
           {/* Bottom Row: Interaction Hint */}
           <div className="flex items-center gap-x-1 text-primary text-xs font-bold pt-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
             <span>إقرأ المقال</span>
-            <ChevronLeft size={14} /> {/* Reversed for Arabic flow */}
+            <ChevronLeft size={14} />
           </div>
         </div>
       </Link>

@@ -20,13 +20,13 @@ export async function getPosts({
     query = supabaseClient
       .rpc("search_posts_pro", { search_term: searchTerm })
       .select(
-        `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
+        `id,created_at,updated_at,last_activity,title,slug,excerpt,post_tags(tags(id,name))`,
       );
   } else {
     query = supabaseClient
       .from("posts")
       .select(
-        `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
+        `id,created_at,updated_at,last_activity,title,slug,excerpt,post_tags(tags(id,name))`,
       );
   }
 
@@ -55,7 +55,7 @@ export async function getPosts({
 
   // Execute the final query
   const { data, error } = await query
-    .order("created_at", { ascending: false })
+    .order("last_activity", { ascending: false })
     .range(pageParam, pageParam + pageSize - 1);
 
   if (error || !data) {
@@ -104,7 +104,7 @@ export async function createPost({
             tag_id: tag.id,
           })),
         );
-      (postTagsError);
+      postTagsError;
 
       if (postTagsError) throw new Error(postTagsError.message);
     }
@@ -291,7 +291,6 @@ export async function getLatestPosts({ limit }: { limit: number }) {
     ...post,
     tags: post["post_tags"]?.map((pt) => pt.tags).flat?.(),
   }));
-
 
   return posts;
 }

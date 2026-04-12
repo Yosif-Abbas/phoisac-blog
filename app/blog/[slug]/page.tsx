@@ -21,7 +21,6 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  // If this is still "undefined", the import above failed
   const post = await getPostBySlug(slug);
 
   if (!post) return { title: "Post Not Found" };

@@ -6,6 +6,12 @@ import { Pencil, Calendar } from "lucide-react";
 import Link from "next/link";
 
 export default function PostItemEdit({ post }: { post: Post }) {
+  const updatedAt = String(post.updated_at);
+  const createdAt = String(post.created_at);
+
+  const isModified =
+    updatedAt && new Date(updatedAt).getTime() > new Date(createdAt).getTime();
+
   return (
     <li className="list-none group ">
       <div className="relative p-5 md:p-6 rounded-2xl border border-card-hover/50 hover:border-primary/30 bg-card/30 hover:bg-card/80 transition-all duration-300 shadow-sm hover:shadow-lg">
@@ -32,7 +38,7 @@ export default function PostItemEdit({ post }: { post: Post }) {
                 }
                 suppressHydrationWarning
               >
-                {formatDate(post.created_at)}
+                {isModified ? formatDate(updatedAt) : formatDate(createdAt)}
               </time>
             </div>
           </div>

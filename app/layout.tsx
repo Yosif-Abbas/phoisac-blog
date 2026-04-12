@@ -8,7 +8,7 @@ import ServerLayoutContent from "@/components/ServerLayoutContent";
 import Loading from "@/components/ui/Loading";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://phoisac-blog.vercel.app"), // CRITICAL for relative image paths
+  metadataBase: new URL("https://www.phoisac.online/"), // CRITICAL for relative image paths
   title: {
     template: "%s | Phoisac Eldali",
     default: "Phoisac Eldali", // Added a descriptor
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "ar_EG",
-    url: "https://phoisac-blog.vercel.app",
+    url: "https://www.phoisac.online/",
     siteName: "Phoisac Eldali",
     images: [
       {

@@ -23,13 +23,13 @@ export async function getServerPosts({
     query = supabase
       .rpc("search_posts_pro", { search_term: searchTerm })
       .select(
-        `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
+        `id,created_at,updated_at,last_activity,title,slug,excerpt,post_tags(tags(id,name))`,
       );
   } else {
     query = supabase
       .from("posts")
       .select(
-        `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
+        `id,created_at,updated_at,last_activity,title,slug,excerpt,post_tags(tags(id,name))`,
       );
   }
 
@@ -59,7 +59,7 @@ export async function getServerPosts({
 
   // 4. Execute the Final Query
   const { data, error } = await query
-    .order("created_at", { ascending: false })
+    .order("last_activity", { ascending: false })
     .range(pageParam, pageParam + pageSize - 1);
 
   if (error || !data) {
