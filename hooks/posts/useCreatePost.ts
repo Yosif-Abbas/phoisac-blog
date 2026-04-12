@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useCurrentUser } from "../auth/useCurrentUser";
 import {
   generateSlug,
+  generateSquareThumbnail,
   generateStoragePath,
   optimizeImageBeforeUpload,
 } from "@/lib/utils/media";
@@ -65,9 +66,14 @@ export function useCreatePost() {
             const file = getLocalFile(block);
             if (file) {
               const fileIndex = currentImageIndex++;
-              const filePath = generateStoragePath(file.name, "blog");
 
-              const optimizedImageFile = await optimizeImageBeforeUpload(file);
+              // Base path for the main image
+              const filePath = generateStoragePath(file.name, "blog");
+              // Path for the thumbnail (replace .webp with _thumb.webp)
+              const thumbFilePath = filePath.replace(
+                /\.[^/.]+$/,
+                "_thumb.webp",
+              );
 
               setUploadQueue((prev) =>
                 prev.map((item, i) =>
@@ -75,19 +81,25 @@ export function useCreatePost() {
                 ),
               );
 
-              const { url, error } = await uploadImage(
-                optimizedImageFile,
-                filePath,
-                "post-images",
-              );
+              // 1. Process both images in parallel
+              const [optimizedImageFile, thumbnailFile] = await Promise.all([
+                optimizeImageBeforeUpload(file),
+                generateSquareThumbnail(file),
+              ]);
 
-              if (error) {
+              // 2. Upload both images to Supabase concurrently
+              const [mainUpload, thumbUpload] = await Promise.all([
+                uploadImage(optimizedImageFile, filePath, "post-images"),
+                uploadImage(thumbnailFile, thumbFilePath, "post-images"),
+              ]);
+
+              if (mainUpload.error || thumbUpload.error) {
                 setUploadQueue((prev) =>
                   prev.map((item, i) =>
                     i === fileIndex ? { ...item, status: "error" } : item,
                   ),
                 );
-                throw new Error(`Image upload failed: ${error}`);
+                throw new Error(`Image upload failed`);
               }
 
               setUploadQueue((prev) =>
@@ -98,6 +110,7 @@ export function useCreatePost() {
                 ),
               );
 
+              // ... (keep the rest of the block normalization exactly the same)
               const bObj = block as unknown as Record<string, unknown>;
               const dataObj =
                 (bObj["data"] as Record<string, unknown> | undefined) ||
@@ -106,12 +119,13 @@ export function useCreatePost() {
                 dataObj && typeof dataObj["caption"] === "string"
                   ? (dataObj["caption"] as string)
                   : undefined;
-              return normalizeBlock({ type: "image", data: { url, caption } });
+              return normalizeBlock({
+                type: "image",
+                data: { url: mainUpload.url, caption },
+              });
             }
-
             return normalizeBlock(block);
           }
-
           return normalizeBlock(block);
         }),
       );

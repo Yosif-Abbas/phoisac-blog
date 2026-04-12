@@ -35,8 +35,7 @@ export async function generateMetadata({
 
   const supabaseUrl = post.cover_image_url;
 
-  const encodedSupabaseUrl = encodeURIComponent(supabaseUrl);
-  const thumbnailCard = `https://wsrv.nl/?url=${encodedSupabaseUrl}&w=300&h=300&fit=cover&a=center`;
+  const thumbUrl = supabaseUrl.replace(/\.[^/.]+$/, "_thumb.webp");
 
   return {
     title: post.title,
@@ -50,7 +49,7 @@ export async function generateMetadata({
 
       images: [
         {
-          url: thumbnailCard, // This will be a perfect 300x300 square
+          url: thumbUrl, // This will be a perfect 300x300 square
           width: 300,
           height: 300,
         },

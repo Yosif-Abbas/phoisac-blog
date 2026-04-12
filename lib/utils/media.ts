@@ -57,3 +57,51 @@ export async function optimizeImageBeforeUpload(file: File): Promise<File> {
     return file;
   }
 }
+
+export async function generateSquareThumbnail(
+  file: File,
+  size = 300,
+): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+
+    img.onload = () => {
+      // Create a canvas to draw the cropped image
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        reject(new Error("Canvas not supported"));
+        return;
+      }
+
+      // Calculate the center crop
+      const minDim = Math.min(img.width, img.height);
+      const startX = (img.width - minDim) / 2;
+      const startY = (img.height - minDim) / 2;
+
+      // Draw the image onto the canvas, cropping it to a square
+      ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
+
+      // Convert the canvas back to a File
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            // Predictable naming: "my-image_thumb.webp"
+            const newFileName = file.name.replace(/\.[^/.]+$/, "_thumb.webp");
+            resolve(new File([blob], newFileName, { type: "image/webp" }));
+          } else {
+            reject(new Error("Canvas to Blob failed"));
+          }
+        },
+        "image/webp",
+        0.8, // 80% quality is perfect for a 300x300 thumbnail
+      );
+    };
+
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
