@@ -33,6 +33,8 @@ export async function generateMetadata({
 
   if (!post) return { title: "Post Not Found" };
 
+  const socialImage = `${post?.cover_image_url}?width=300&height=300&resize=contain`;
+
   return {
     title: post.title,
     description: post.excerpt || "اقرأ المزيد على مدونة Phoisac Eldali",
@@ -43,8 +45,8 @@ export async function generateMetadata({
       title: post.title,
       description: post.excerpt,
       images: post.cover_image_url
-        ? [{ url: post.cover_image_url }, "/og-image.jpg"]
-        : ["/og-image.jpg"],
+        ? [{ url: socialImage }, "/logo.jpg"]
+        : ["/logo.jpg"],
     },
   };
 }

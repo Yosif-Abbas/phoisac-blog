@@ -41,7 +41,8 @@ export const metadata: Metadata = {
     url: "https://www.phoisac.online",
     siteName: "Phoisac Eldali",
     title: "Phoisac Eldali | مدونة أدبية",
-    description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية. ",
+    description:
+      "مدونة أدبية متخصصة تضم مجموعة فريدة من القصائد الشعرية، والروايات العميقة، والنصوص الإبداعية. استكشف عالم المعاني والكلمات مع الكاتب Phoisac Eldali. ",
 
     images: [
       {
@@ -56,7 +57,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Phoisac Eldali | مدونة أدبية",
-    description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية.",
+    description:
+      "مدونة أدبية متخصصة تضم مجموعة فريدة من القصائد الشعرية، والروايات العميقة، والنصوص الإبداعية. استكشف عالم المعاني والكلمات مع الكاتب Phoisac Eldali.",
     images: [
       {
         url: "/logo.jpg",
