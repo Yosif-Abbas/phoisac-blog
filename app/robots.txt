@@ -2,18 +2,10 @@ import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        // Explicitly allow Facebook and Google
-        userAgent: ['facebookexternalhit', 'Googlebot', 'Bingbot'],
-        allow: '/',
-      },
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: '/private/', 
-      },
-    ],
-    sitemap: 'https://phoisac.online/sitemap.xml',
+    rules: {
+      userAgent: '*',
+      allow: '/',
+    },
+    sitemap: 'https://www.phoisac.online/sitemap.xml',
   }
 }
