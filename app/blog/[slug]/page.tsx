@@ -35,7 +35,8 @@ export async function generateMetadata({
 
   const supabaseUrl = post.cover_image_url;
 
-  const cloudinaryThumbnail = `https://res.cloudinary.com/demo/image/fetch/ar_1:1,c_fill,g_auto,w_300/f_auto/${supabaseUrl}`;
+  const cleanUrl = supabaseUrl.replace("https://", "");
+  const thumbnailCard = `https://wsrv.nl/?url=${cleanUrl}&w=300&h=300&fit=cover&a=center`;
 
   return {
     title: post.title,
@@ -49,7 +50,7 @@ export async function generateMetadata({
 
       images: [
         {
-          url: cloudinaryThumbnail, // This will be a perfect 300x300 square
+          url: thumbnailCard, // This will be a perfect 300x300 square
           width: 300,
           height: 300,
         },
