@@ -42,7 +42,9 @@ export async function generateMetadata({
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      images: post.cover_image_url ? [{ url: post.cover_image_url }] : [],
+      images: post.cover_image_url
+        ? [{ url: post.cover_image_url }, "/og-image.jpg"]
+        : ["/og-image.jpg"],
     },
   };
 }

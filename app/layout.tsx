@@ -38,22 +38,23 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "ar_EG",
-    url: "https://www.phoisac.online/",
+    url: "https://www.phoisac.online",
     siteName: "Phoisac Eldali",
     title: "Phoisac Eldali | مدونة أدبية",
     description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية الحصرية.",
+
     images: [
       {
         url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
+        width: 736,
+        height: 736,
         alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
       },
     ],
   },
 
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Phoisac Eldali | مدونة أدبية",
     description: "اكتشف عالمًا من الأدب، الروايات، والقصائد الشعرية الحصرية.",
     images: ["/og-image.jpg"],
