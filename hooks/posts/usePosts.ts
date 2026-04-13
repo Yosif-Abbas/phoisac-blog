@@ -11,8 +11,6 @@ export function usePosts() {
   const searchTerm = searchParams.get("search") || "";
   const tags = searchParams.getAll("tag").sort();
 
-  console.log(user);
-
   return useInfiniteQuery({
     queryKey: ["posts", searchTerm, tags],
     queryFn: ({ pageParam = 0 }) =>

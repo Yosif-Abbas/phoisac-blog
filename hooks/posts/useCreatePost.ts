@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import type { Block, StructuredContent, Tag } from "@/types/cms";
+import type { StructuredContent, Tag } from "@/types/cms";
 import { uploadImage } from "@/services/client/posts";
 import { createPostAction } from "@/actions/post-actions";
 import { useState } from "react";
@@ -31,8 +31,6 @@ export function useCreatePost() {
     }) => {
       const postTime = Date.now();
 
-      // Helper to safely extract a browser File from either the legacy
-      // `data.file.localFile` shape or `data.upload.localFile` shape.
       const getLocalFile = (block: unknown): File | undefined => {
         const b = (block as Record<string, unknown>) || {};
         if (b["type"] !== "image") return undefined;

@@ -120,13 +120,19 @@ export async function getServerPostBySlug(slug: string) {
 export async function getLatestPosts({ limit }: { limit: number }) {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const hiddenAuthorId = "93b90a78-1d9d-43a3-b680-2732953c592c";
+
+  let query = supabase
     .from("posts")
     .select(
       `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
     )
     .order("created_at", { ascending: false })
     .limit(limit);
+
+  query = query.neq("author_id", hiddenAuthorId);
+
+  const { data, error } = await query;
 
   if (error) throw new Error(error.message);
 

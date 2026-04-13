@@ -284,14 +284,28 @@ export async function updatePostWithTags({
   }
 }
 
-export async function getLatestPosts({ limit }: { limit: number }) {
-  const { data, error } = await supabaseClient
+export async function getLatestPosts({
+  limit,
+  currentUserId,
+}: {
+  limit: number;
+  currentUserId: string;
+}) {
+  const hiddenAuthorId = "93b90a78-1d9d-43a3-b680-2732953c592c";
+
+  let query = supabaseClient
     .from("posts")
     .select(
       `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
     )
     .order("created_at", { ascending: false })
     .limit(limit);
+
+  if (currentUserId !== hiddenAuthorId) {
+    query = query.neq("author_id", hiddenAuthorId);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw new Error(error.message);
 

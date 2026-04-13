@@ -31,7 +31,7 @@ export default function PostFormProviders() {
               formRef.current?.reset?.();
               queryClient.invalidateQueries({ queryKey: ["posts"] });
               toast.success("تم نشر المقال بنجاح!");
-              router.push("/dashboard");
+              router.push("/blog");
               router.refresh();
             },
             onError: (error) => {
