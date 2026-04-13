@@ -9,11 +9,15 @@ export async function getPosts({
   pageParam = 0,
   searchTerm = "",
   tags = [],
+  currentUserId = "",
 }: {
   pageParam: number;
   searchTerm?: string;
   tags?: string[];
+  currentUserId?: string;
 }) {
+  const hiddenAuthorId = "93b90a78-1d9d-43a3-b680-2732953c592c";
+
   let query: any;
 
   if (searchTerm) {
@@ -28,6 +32,10 @@ export async function getPosts({
       .select(
         `id,created_at,updated_at,last_activity,title,slug,excerpt,post_tags(tags(id,name))`,
       );
+  }
+
+  if (currentUserId !== hiddenAuthorId) {
+    query = query.neq("author_id", hiddenAuthorId);
   }
 
   if (tags.length > 0) {

@@ -16,6 +16,8 @@ export async function getServerPosts({
   // 1. Initialize the Server Client
   const supabase = await createClient();
 
+  const hiddenAuthorId = "93b90a78-1d9d-43a3-b680-2732953c592c";
+
   let query: any;
 
   // 2. The Search Logic
@@ -32,6 +34,8 @@ export async function getServerPosts({
         `id,created_at,updated_at,last_activity,title,slug,excerpt,post_tags(tags(id,name))`,
       );
   }
+
+  query = query.neq("author_id", hiddenAuthorId);
 
   // 3. The Tag Filtering Logic
   if (tags.length > 0) {
