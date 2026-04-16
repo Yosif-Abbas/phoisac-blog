@@ -6,7 +6,9 @@ import { Providers } from "@/components/Providers";
 import { Suspense } from "react";
 import ServerLayoutContent from "@/components/ServerLayoutContent";
 import Loading from "@/components/ui/Loading";
-import { Analytics } from "@vercel/analytics/next"
+
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.phoisac.online/"),
@@ -105,6 +107,8 @@ export default function RootLayout({
             <ServerLayoutContent>{children}</ServerLayoutContent>
           </Providers>
         </Suspense>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
