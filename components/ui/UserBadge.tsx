@@ -3,20 +3,25 @@
 import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import { formatDate } from "@/lib/utils/formatDate";
 import { Eye, Calendar } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface Props {
   date: string;
-  updatedAt?: string; // Add this
+  updatedAt?: string;
   view_count: number;
 }
 
 export default function UserBadge({ date, updatedAt, view_count }: Props) {
   const { isAdmin } = useCurrentUser();
 
-  // Check if the post was actually modified (more than 1 minute difference)
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const isModified =
     updatedAt && new Date(updatedAt).getTime() > new Date(date).getTime();
-
   return (
     <div className="flex items-center gap-x-3 gap-y-2 text-sm text-muted-foreground flex-wrap">
       {/* Author Part */}
@@ -53,7 +58,8 @@ export default function UserBadge({ date, updatedAt, view_count }: Props) {
       </div>
 
       {/* Admin View Count */}
-      {isAdmin && Boolean(view_count) && (
+      {/* 3. Wait for mounting before showing the Admin View Count */}
+      {isMounted && isAdmin && Boolean(view_count) && (
         <>
           <span className="opacity-20 hidden sm:block">•</span>
           <div className="flex items-center gap-x-1 bg-primary/5 text-primary px-2 py-0.5 rounded-full border border-primary/10">

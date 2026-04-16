@@ -12,6 +12,6 @@ export function useCurrentUser() {
     user,
     isLoading,
     isAuthenticated: !!user,
-    isAdmin: user?.role === "admin",
+    isAdmin: user?.role === "admin" || user?.role === "developer",
   };
 }

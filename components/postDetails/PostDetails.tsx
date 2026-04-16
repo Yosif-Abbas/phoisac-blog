@@ -16,6 +16,12 @@ export default function PostDetails({ slug }: { slug: string }) {
   const supabaseClient = createClient();
   const { post, isLoading, isError, isFetching, refetch } = usePost(slug);
 
+  const isDeleted: boolean =
+    post?.status === "deleted" || post?.deleted_at !== null;
+
+  console.log(isDeleted);
+  console.log(post);
+
   const hasIncremented = useRef(false);
 
   useEffect(() => {
@@ -51,8 +57,14 @@ export default function PostDetails({ slug }: { slug: string }) {
 
   return (
     <div className="flex flex-col w-full">
-      <header className=" mx-auto w-full pt-8 pb-8 md:px-4 flex flex-col gap-y-8">
+      <header className=" mx-auto w-full pt-8 pb-8 md:px-4 flex flex-col gap-y-6">
         <BackToBlog />
+
+        {isDeleted && (
+          <div className="py-4 text-sm text-destructive">
+            هذا المقال محذوف، انت فقط يمكنك رؤيته.
+          </div>
+        )}
 
         <h1 className="font-serif text-4xl md:text-6xl font-bold text-foreground leading-tight">
           {post.title}

@@ -50,12 +50,46 @@ export async function getMediaLibrary(): Promise<MediaItem[]> {
 export async function deleteMediaAction(fileName: string) {
   const supabase = await createClient();
 
+  const storagePath = `blog/${fileName}`;
+
   const { error } = await supabase.storage
     .from("post-images")
-    .remove([`blog/${fileName}`]);
+    .remove([storagePath]);
 
   if (error) {
     throw new Error("Failed to delete image from storage");
+  }
+
+  // Also remove the row from the `media` table so it disappears from the library.
+  // This is best-effort: even if the table schema differs, the storage deletion should still succeed.
+  try {
+    const { error: mediaError } = await supabase
+      .from("media")
+      .delete()
+      .eq("file_path", storagePath);
+
+    if (mediaError) {
+      console.warn("Failed to delete media row by file_path:", mediaError);
+    }
+  } catch (err) {
+    console.warn("Failed to delete media row:", err);
+  }
+
+  // Fallback: some schemas may store only `file_name`
+  try {
+    const { error: mediaErrorByName } = await supabase
+      .from("media")
+      .delete()
+      .eq("file_name", fileName);
+
+    if (mediaErrorByName) {
+      console.warn(
+        "Failed to delete media row by file_name:",
+        mediaErrorByName,
+      );
+    }
+  } catch (err) {
+    console.warn("Failed to delete media row by file_name:", err);
   }
 
   return { success: true };

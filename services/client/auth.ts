@@ -28,6 +28,7 @@ export async function getClientUser() {
   // 3. Return a clean, merged object for your UI
   return {
     ...profile,
+    role: profile.role || "user",
     email: authUser.email,
     user_metadata: authUser.user_metadata,
   };

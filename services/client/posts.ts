@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { getImageDimensions } from "@/lib/utils/media";
 import type { Post, PostTag } from "@/types/cms";
 
 const supabaseClient = createClient();
@@ -9,15 +10,11 @@ export async function getPosts({
   pageParam = 0,
   searchTerm = "",
   tags = [],
-  currentUserId = "",
 }: {
   pageParam: number;
   searchTerm?: string;
   tags?: string[];
-  currentUserId?: string;
 }) {
-  const hiddenAuthorId = "93b90a78-1d9d-43a3-b680-2732953c592c";
-
   let query: any;
 
   if (searchTerm) {
@@ -34,9 +31,8 @@ export async function getPosts({
       );
   }
 
-  if (currentUserId !== hiddenAuthorId) {
-    query = query.neq("author_id", hiddenAuthorId);
-  }
+  query = query.eq("status", "published");
+  query = query.is("deleted_at", null);
 
   if (tags.length > 0) {
     const { data: tagData } = await supabaseClient
@@ -135,6 +131,8 @@ export async function uploadImage(
   bucketName: UploadBucket,
 ): Promise<UploadImageResult> {
   try {
+    const { width, height } = await getImageDimensions(file);
+
     // 2. Use the official SDK to handle the upload, auth, and headers automatically
     const { data, error } = await supabaseClient.storage
       .from(bucketName)
@@ -171,6 +169,8 @@ export async function uploadImage(
           file_size: fileSize,
           mime_type: mimeType,
           alt_text: null,
+          width, // New Column
+          height, // New Column
           uploader_id: authUser?.id || null,
         },
       ]);
@@ -198,7 +198,7 @@ export async function getPostBySlug(slug: string) {
   const { data, error } = await supabaseClient
     .from("posts")
     .select(
-      `id,created_at,updated_at,title,slug,excerpt,content,view_count,post_tags(tags(id,name))`,
+      `id,created_at,updated_at,deleted_at,status,title,slug,excerpt,content,view_count,post_tags(tags(id,name))`,
     )
     .eq("slug", slug)
     .single();
@@ -284,15 +284,7 @@ export async function updatePostWithTags({
   }
 }
 
-export async function getLatestPosts({
-  limit,
-  currentUserId,
-}: {
-  limit: number;
-  currentUserId: string;
-}) {
-  const hiddenAuthorId = "93b90a78-1d9d-43a3-b680-2732953c592c";
-
+export async function getLatestPosts({ limit }: { limit: number }) {
   let query = supabaseClient
     .from("posts")
     .select(
@@ -301,9 +293,8 @@ export async function getLatestPosts({
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (currentUserId !== hiddenAuthorId) {
-    query = query.neq("author_id", hiddenAuthorId);
-  }
+  query = query.eq("status", "published");
+  query = query.is("deleted_at", null);
 
   const { data, error } = await query;
 

@@ -16,8 +16,6 @@ export async function getServerPosts({
   // 1. Initialize the Server Client
   const supabase = await createClient();
 
-  const hiddenAuthorId = "93b90a78-1d9d-43a3-b680-2732953c592c";
-
   let query: any;
 
   // 2. The Search Logic
@@ -35,7 +33,8 @@ export async function getServerPosts({
       );
   }
 
-  query = query.neq("author_id", hiddenAuthorId);
+  query = query.eq("status", "published");
+  query = query.is("deleted_at", null);
 
   // 3. The Tag Filtering Logic
   if (tags.length > 0) {
@@ -94,7 +93,7 @@ export async function getServerPostBySlug(slug: string) {
   const { data, error } = await supabase
     .from("posts")
     .select(
-      `id,created_at,updated_at,title,slug,excerpt,content,view_count,cover_image_url,post_tags(tags(id,name))`,
+      `id,created_at,updated_at,deleted_at,status,title,slug,excerpt,content,view_count,cover_image_url,post_tags(tags(id,name))`,
     )
     .eq("slug", slug)
     .single();
@@ -120,8 +119,6 @@ export async function getServerPostBySlug(slug: string) {
 export async function getLatestPosts({ limit }: { limit: number }) {
   const supabase = await createClient();
 
-  const hiddenAuthorId = "93b90a78-1d9d-43a3-b680-2732953c592c";
-
   let query = supabase
     .from("posts")
     .select(
@@ -130,7 +127,8 @@ export async function getLatestPosts({ limit }: { limit: number }) {
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  query = query.neq("author_id", hiddenAuthorId);
+  query = query.eq("status", "published");
+  query = query.is("deleted_at", null);
 
   const { data, error } = await query;
 

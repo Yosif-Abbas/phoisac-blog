@@ -102,10 +102,11 @@ export interface Post {
   created_at?: string | Date;
   updated_at?: string | Date | null;
   excerpt?: string;
-  status?: "draft" | "published" | "archived";
+  status?: "draft" | "published" | "archived" | "test" | "deleted";
   view_count?: number;
   tags?: Tag[];
   post_tags?: PostTag[];
+  deleted_at?: string | Date | null;
 }
 
 // Export DB-row shaped types for server code that expects column names

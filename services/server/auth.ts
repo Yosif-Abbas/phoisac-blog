@@ -26,6 +26,7 @@ export async function getServerUser() {
   // 3. Merge them and return
   return {
     ...profile,
+    role: profile.role || "user",
     user_metadata: authUser.user_metadata,
     identities: authUser.identities,
   };
@@ -42,7 +43,7 @@ export async function getQueryClientUser() {
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
-    .eq("user_id", authUser.id)
+    .eq("id", authUser.id)
     .single();
 
   if (!profile) return null;

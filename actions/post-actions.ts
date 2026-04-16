@@ -165,13 +165,10 @@ export async function updatePostAction(payload: {
     );
   }
 
-  // Wait for tag syncing to finish
   await Promise.all(operations);
 
-  // 4. THE MAGIC: Clear all caches where this post might appear
   revalidatePath("/blog");
-  revalidatePath(`/blog/${payload.slug}`); // Clear the specific post page!
-  revalidatePath("/dashboard");
+  revalidatePath(`/blog/${payload.slug}`);
 
   return { success: true };
 }
@@ -179,11 +176,18 @@ export async function updatePostAction(payload: {
 export async function deletePostAction({ slug }: { slug: string }) {
   const supabase = await createClient();
 
-  const { error } = await supabase.from("posts").delete().eq("slug", slug);
+  const { error } = await supabase
+    .from("posts")
+    .update({
+      deleted_at: new Date().toISOString(),
+      status: "deleted",
+    })
+    .eq("slug", slug);
 
   if (error) throw new Error(error.message);
 
   revalidatePath("/blog");
+  revalidatePath(`/blog/${slug}`);
 }
 
 // Helper to escape regex characters in case a title has brackets or stars
@@ -196,13 +200,12 @@ async function getUniqueTitle(
   baseTitle: string,
   excludePostId?: string,
 ): Promise<string> {
-  // 1. Ask Supabase for any titles that start with our base title
   let query: any = supabase
     .from("posts")
     .select("title")
-    .ilike("title", `${baseTitle}%`); // Fetch only potential matches to save memory
+    .ilike("title", `${baseTitle}%`)
+    .is("deleted_at", null);
 
-  // If we're updating an existing post, exclude that post from the results
   if (excludePostId != null) {
     query = query.neq("id", excludePostId);
   }
