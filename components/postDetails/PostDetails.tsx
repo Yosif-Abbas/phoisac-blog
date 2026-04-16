@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
 import type { Tag } from "@/types/cms";
 
 import BackToBlog from "./BackToBlog";
@@ -13,37 +12,21 @@ import { notFound } from "next/navigation";
 import QueryErrorRetry from "../ui/QueryErrorRetry";
 
 export default function PostDetails({ slug }: { slug: string }) {
-  const supabaseClient = createClient();
   const { post, isLoading, isError, isFetching, refetch } = usePost(slug);
 
   const isDeleted: boolean =
     post?.status === "deleted" || post?.deleted_at !== null;
-
-  console.log(isDeleted);
-  console.log(post);
 
   const hasIncremented = useRef(false);
 
   useEffect(() => {
     if (!slug || isLoading || hasIncremented.current) return;
 
-    const storageKey = `viewed_${slug}`;
-    const hasViewedInSession = sessionStorage.getItem(storageKey);
+    hasIncremented.current = true;
 
-    if (!hasViewedInSession) {
-      hasIncremented.current = true;
-
-      const incrementView = async () => {
-        try {
-          await supabaseClient.rpc("increment_page_view", { post_slug: slug });
-          sessionStorage.setItem(storageKey, "true");
-        } catch (err) {
-          console.error("Failed to increment view:", err);
-        }
-      };
-
-      incrementView();
-    }
+    fetch(`/api/views/${slug}`, { method: "POST" }).catch((err) =>
+      console.error("Analytics error:", err),
+    );
   }, [slug, isLoading]);
 
   if (isLoading) {

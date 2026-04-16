@@ -35,7 +35,7 @@ export async function generateMetadata({
 
   const supabaseUrl = post.cover_image_url;
 
-  const thumbUrl = supabaseUrl.replace(/\.[^/.]+$/, "_thumb.webp");
+  const thumbUrl = supabaseUrl?.replace(/\.[^/.]+$/, "_thumb.webp");
 
   return {
     title: post.title,
@@ -49,7 +49,7 @@ export async function generateMetadata({
 
       images: [
         {
-          url: thumbUrl, // This will be a perfect 300x300 square
+          url: thumbUrl,
           width: 300,
           height: 300,
         },
