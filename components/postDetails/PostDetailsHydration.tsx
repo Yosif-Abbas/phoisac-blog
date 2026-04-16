@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import PostDetails from "./PostDetails";
 import { getServerPostBySlug } from "@/services/server/posts";
 import { getServerUser } from "@/services/server/auth";
+import { Post } from "@/types/cms";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -22,7 +23,7 @@ export default async function PostDetailsHydration({ params }: Props) {
     queryFn: () => getServerPostBySlug(slug),
   });
 
-  const post = queryClient.getQueryData(["post", slug]);
+  const post = queryClient.getQueryData<Post>(["post", slug]);
 
   if (!post || (post.status === "test" && user?.role !== "developer")) {
     notFound();
