@@ -27,7 +27,7 @@ export default function PoemBlock({ data }: { data: PoemBlock["data"] }) {
   }
 
   return (
-    <figure className="w-full my-6 flex flex-col items-center">
+    <div className="w-full my-10 flex flex-col items-center">
       <div
         className={`
           w-full max-w-4xl mx-auto flex flex-col gap-y-2 md:gap-y-6 
@@ -38,10 +38,8 @@ export default function PoemBlock({ data }: { data: PoemBlock["data"] }) {
           <div
             key={idx}
             className={`
-      relative w-full font-serif text-xl md:text-3xl text-foreground/90 leading-relaxed
-      /* THE FIX: flex-col on mobile, flex-row on desktop */
-      ${isClassic ? "flex flex-col md:flex-row md:justify-between items-stretch md:items-center gap-y-1 md:gap-y-0 md:gap-x-12 mb-6" : "flex flex-col items-center text-center mb-6"}
-    `}
+              relative w-full font-serif text-xl lg:text-2xl text-foreground/90 leading-relaxed ${isClassic ? "flex flex-col md:flex-row md:justify-between items-stretch md:items-center gap-y-1 md:gap-y-0 md:gap-x-12" : "flex flex-col items-center text-center"}
+            `}
           >
             {/* The First Half (Sadr) - Stays Top Right on Mobile */}
             <p
@@ -73,7 +71,7 @@ export default function PoemBlock({ data }: { data: PoemBlock["data"] }) {
 
       {/* Poet/Source Caption */}
       {caption && (
-        <figcaption className="mt-4 md:mt-8 flex items-center gap-x-4 text-muted-foreground/70">
+        <div className="mt-4 md:mt-8 flex items-center gap-x-4 text-muted-foreground/70">
           <div className="h-px w-6 lg:w-8 bg-slate-300 dark:bg-slate-600"></div>
 
           <span
@@ -81,8 +79,8 @@ export default function PoemBlock({ data }: { data: PoemBlock["data"] }) {
             dangerouslySetInnerHTML={{ __html: sanitize(caption) }}
           />
           <div className="h-px w-6 lg:w-8 bg-slate-300 dark:bg-slate-600"></div>
-        </figcaption>
+        </div>
       )}
-    </figure>
+    </div>
   );
 }

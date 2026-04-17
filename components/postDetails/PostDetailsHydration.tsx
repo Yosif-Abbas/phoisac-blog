@@ -30,10 +30,9 @@ export default async function PostDetailsHydration({ params }: Props) {
   }
 
   if (post.deleted_at !== null || post.status === "deleted") {
-    const isAdmin = user?.role === "admin";
-    const isDeveloper = user?.role === "developer";
+    const isAdmin = user?.role === "admin" || user?.role === "developer";
 
-    if (!(isAdmin || isDeveloper)) {
+    if (!isAdmin) {
       notFound();
     }
   }

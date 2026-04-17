@@ -10,6 +10,7 @@ import { useEffect, useRef } from "react";
 import StructuredContent from "./StructuredContent";
 import { notFound } from "next/navigation";
 import QueryErrorRetry from "../ui/QueryErrorRetry";
+import ShareButton from "./ShareButton";
 
 export default function PostDetails({ slug }: { slug: string }) {
   const { post, isLoading, isError, isFetching, refetch } = usePost(slug);
@@ -41,7 +42,10 @@ export default function PostDetails({ slug }: { slug: string }) {
   return (
     <div className="flex flex-col w-full">
       <header className=" mx-auto w-full pt-8 pb-8 md:px-4 flex flex-col gap-y-6">
-        <BackToBlog />
+        <div className="flex items-center justify-between">
+          <BackToBlog />
+          <ShareButton title={post.title} text="اقرأ هذا المقال الرائع" />
+        </div>
 
         {isDeleted && (
           <div className="py-4 text-sm text-destructive">

@@ -4,13 +4,8 @@ const supabaseClient = createClient();
 
 export async function getTags() {
   const { data, error, count } = await supabaseClient
-    .from("tags")
-    .select(
-      `
-      *,
-      post_count: post_tags(count)
-    `,
-    )
+    .from("tags_with_published_counts")
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -18,12 +13,7 @@ export async function getTags() {
     throw new Error(error.message);
   }
 
-  const formattedData = data.map((tag) => ({
-    ...tag,
-    count: tag.post_count?.[0]?.count || 0,
-  }));
-
-  return { data: formattedData, count };
+  return { data, count };
 }
 
 export async function addTag(tagName: string) {
@@ -44,7 +34,6 @@ export async function updateTag({
   tagId: string;
   tagName: string;
 }) {
-
   const { error } = await supabaseClient
     .from("tags")
     .update({ name: tagName })

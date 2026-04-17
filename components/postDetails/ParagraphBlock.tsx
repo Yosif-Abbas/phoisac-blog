@@ -15,7 +15,6 @@ export default function ParagraphBlock({ data }: { data: { text: string } }) {
     return content;
   };
 
-  // Prevent hydration mismatch by rendering a simple placeholder during SSR
   if (!isMounted) {
     return (
       <div className="w-full min-h-[1.5em] my-2 animate-pulse bg-foreground/5 rounded" />

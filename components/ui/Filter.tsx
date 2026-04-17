@@ -12,21 +12,18 @@ export default function Filter() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const [isPending, startTransition] = useTransition(); // Add this
-
+  const [isPending, startTransition] = useTransition();
 
   const [optimisticTags, setOptimisticTags] = useState<string[] | null>(null);
 
   const selectedTagNames = searchParams.getAll("tag");
   const currentTags =
     optimisticTags !== null ? optimisticTags : selectedTagNames;
-  const selectedTagSet = new Set(currentTags); // Use this for your buttons!
-
-  const selectedTagCount = selectedTagSet.size;
+  const selectedTagSet = new Set(currentTags);
 
   const sortedTags = tags
     ? tags
-        .filter((tag) => tag.count > 0)
+        .filter((tag) => tag.published_post_count > 0)
         .sort((a, b) => {
           const aSelected = selectedTagSet.has(a.name);
           const bSelected = selectedTagSet.has(b.name);
@@ -34,14 +31,7 @@ export default function Filter() {
         })
     : [];
 
-  const visibleTags = isOpen
-    ? sortedTags
-    : [
-        ...sortedTags.filter((tag) => selectedTagSet.has(tag.name)),
-        ...sortedTags
-          .filter((tag) => !selectedTagSet.has(tag.name))
-          .slice(0, Math.max(0, 5 - selectedTagCount)),
-      ];
+  const visibleTags = isOpen ? sortedTags : sortedTags.slice(0, 5);
 
   const handleTagToggle = (tagName: string) => {
     const nextTags = currentTags.includes(tagName)
@@ -60,6 +50,8 @@ export default function Filter() {
   };
 
   if (isLoading) return <TagsFilterSkeleton />;
+
+  if (sortedTags.length === 0) return null;
 
   return (
     <div
@@ -88,7 +80,7 @@ export default function Filter() {
         );
       })}
 
-      {tags && tags.length > 5 && (
+      {sortedTags && sortedTags.length > 5 && (
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`

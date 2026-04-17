@@ -4,17 +4,14 @@ export async function getServerTags() {
   const supabase = await createClient();
 
   const { data, error, count } = await supabase
-    .from("tags")
-    .select(`*, post_count: "post_tags"(count)`, { count: "exact" }) // Get the count too
+    .from("tags_with_published_counts")
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: true });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("Error fetching tags:", error);
+    throw new Error(error.message);
+  }
 
-  const formattedData = data.map((tag: any) => ({
-    ...tag,
-    count: tag.post_count?.[0]?.count || 0,
-  }));
-
-  // MATCH THE CLIENT SHAPE EXACTLY
-  return { data: formattedData, count };
+  return { data, count };
 }

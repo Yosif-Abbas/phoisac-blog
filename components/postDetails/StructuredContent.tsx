@@ -12,12 +12,20 @@ import type {
   PoemBlock as PoemBlockType,
 } from "@/types/cms";
 import PoemBlock from "./PoemBlock";
+import HeaderBlock from "./HeaderBlock";
 
 export default function StructuredContent({ blocks }: StructuredContentType) {
   return (
-    <article className=" w-full flex flex-col gap-y-4 md:gap-y-6 py-6 md:px-4">
+    <article className=" w-full flex flex-col gap-y-4 md:gap-y-6 pt-6 pb-10 md:px-2">
       {blocks.map((block: Block, index) => {
         switch (block.type) {
+          case "header":
+            return (
+              <HeaderBlock
+                data={block.data as ImageBlockType["data"]}
+                key={index}
+              />
+            );
           case "paragraph":
             return (
               <ParagraphBlock

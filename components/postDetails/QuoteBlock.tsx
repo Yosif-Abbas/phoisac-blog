@@ -25,7 +25,7 @@ export default function QuoteBlock({
   }
 
   return (
-    <div className="my-4 md:px-4">
+    <div className="my-12 w-full px-2 md:px-0">
       <div className="relative max-w-2xl mx-auto p-8 md:p-6 rounded-2xl bg-white/40 backdrop-blur-md  dark:bg-slate-900/40 ">
         {/* Decorative Quote Icon - Centered at the top */}
         <div className="absolute -top-5 left-1/2 -translate-x-1/2  p-2 rounded-full  ">
@@ -35,24 +35,22 @@ export default function QuoteBlock({
           />
         </div>
 
-        <div className="flex flex-col items-center text-center space-y-6 ">
+        <div className="flex flex-col items-center text-center ">
           {/* Using CSS pseudo-elements for quotes so they wrap the HTML cleanly.
             Using « » which are standard in professional Arabic typography.
           */}
           <div
-            className="font-serif text-xl lg:text-2xl text-slate-800 dark:text-slate-100 leading-relaxed 
-                       before:content-['«'] before:mr-1 before:text-slate-400 
-                       after:content-['»'] after:ml-1 after:text-slate-400"
+            className="font-serif text-xl lg:text-2xl text-slate-800 dark:text-slate-100 leading-relaxed before:content-['«'] before:mr-1 before:text-slate-400 after:content-['»'] after:ml-1 after:text-slate-400"
             dangerouslySetInnerHTML={{ __html: sanitize(data.text) }}
           />
 
           {data.caption && (
-            <div className="flex items-center gap-4 mt-6">
+            <div className="mt-4 md:mt-8 flex items-center gap-x-4 text-muted-foreground/70">
               <div className="h-px w-6 lg:w-8 bg-slate-300 dark:bg-slate-600"></div>
 
               {/* Editor.js captions can contain formatting, so we sanitize them too */}
               <span
-                className="text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 tracking-wider"
+                className="text-sm md:text-base font-medium text-nowrap"
                 dangerouslySetInnerHTML={{ __html: sanitize(data.caption) }}
               />
               <div className="h-px w-6 lg:w-8 bg-slate-300 dark:bg-slate-600"></div>

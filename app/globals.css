@@ -23,8 +23,7 @@ body {
 }
 
 .panel {
-  /* Removed the heavy horizontal padding to let the fixed grid width do the work */
-  @apply py-6 px-4 shadow-sm bg-container lg:rounded-2xl border border-[#E5E7EB] dark:border-card-hover w-full;
+  @apply py-6 px-2 lg:px-4 shadow-sm bg-container lg:rounded-2xl border border-[#E5E7EB] dark:border-card-hover w-full;
 }
 
 .date {
@@ -235,6 +234,10 @@ secondary: #7AA2FF */
 }
 
 .ce-paragraph {
+  @apply leading-relaxed text-lg;
+}
+
+.ce-header {
   @apply leading-relaxed text-lg;
 }
 

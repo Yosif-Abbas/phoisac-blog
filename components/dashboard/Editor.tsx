@@ -78,6 +78,15 @@ const Editor = (
         },
 
         tools: {
+          header: {
+            class: Header as any,
+            inlineToolbar: true,
+            config: {
+              placeholder: "اكتب عنواناً...",
+              levels: [2],
+              defaultLevel: 2,
+            },
+          },
           poem: {
             class: PoemTool,
             inlineToolbar: true,
