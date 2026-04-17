@@ -10,6 +10,7 @@ import type {
   QuoteBlock as QuoteBlockType,
   ImageBlock as ImageBlockType,
   PoemBlock as PoemBlockType,
+  HeaderBlock as HeaderBlockType,
 } from "@/types/cms";
 import PoemBlock from "./PoemBlock";
 import HeaderBlock from "./HeaderBlock";
@@ -22,7 +23,7 @@ export default function StructuredContent({ blocks }: StructuredContentType) {
           case "header":
             return (
               <HeaderBlock
-                data={block.data as ImageBlockType["data"]}
+                data={block.data as HeaderBlockType["data"]}
                 key={index}
               />
             );

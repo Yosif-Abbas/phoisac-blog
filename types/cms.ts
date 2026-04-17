@@ -75,6 +75,11 @@ export type ImageBlock = OutputBlockData<
   }
 >;
 
+export type HeaderBlock = OutputBlockData<
+  "header",
+  { text: string; level: number }
+>;
+
 export type PoemBlock = OutputBlockData<
   "poem",
   { cols: Column[]; caption?: string; style?: string }
