@@ -44,7 +44,7 @@ export default function PostDetails({ slug }: { slug: string }) {
       <header className=" mx-auto w-full pt-8 pb-8 md:px-4 flex flex-col gap-y-6">
         <div className="flex items-center justify-between">
           <BackToBlog />
-          <ShareButton title={post.title} text="اقرأ هذا المقال الرائع" />
+          <ShareButton title={post.title} />
         </div>
 
         {isDeleted && (
