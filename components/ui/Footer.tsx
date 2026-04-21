@@ -14,7 +14,12 @@ export default function Footer() {
           <CurrentYear />
           <span className="font-medium text-foreground/80">فويزاك الدالي</span>
         </div>
-        <Link href="/privacy">سياسة الخصوصية (Privacy Policy)</Link>
+        <Link
+          href="/privacy"
+          className="hover:text-primary hover:underline transition-all font-medium"
+        >
+          سياسة الخصوصية (Privacy Policy)
+        </Link>
 
         <div className="flex items-center gap-x-1 order-1 md:order-2">
           <span>تم التطوير بواسطة</span>
