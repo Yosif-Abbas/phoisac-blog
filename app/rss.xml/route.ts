@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { renderBlocksToHtml } from "@/lib/utils/toHTML";
-import { Post } from "@/types/cms";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -13,7 +12,6 @@ export async function GET() {
       .from("posts")
       .select("*")
       .eq("status", "test")
-      .returns<Post[]>()
       .order("created_at", { ascending: false });
 
     if (error) throw error;
