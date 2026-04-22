@@ -46,9 +46,9 @@ export async function GET() {
             <link>${siteUrl}/blog/${post.slug}</link>
             <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
             <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
+            ${coverImage}
             
             <content:encoded><![CDATA[
-              ${coverImage}
                   ${fullContentHtml}
                   ]]></content:encoded>
                   </item>

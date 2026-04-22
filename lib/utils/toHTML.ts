@@ -42,7 +42,7 @@ export function renderBlocksToHtml(blocks: Block[]) {
         case "quote":
           const quoteData = block.data as QuoteBlock["data"];
 
-          return `<blockquote style="border-right: 4px solid #cbd5e1; padding-right: 1.25rem; margin: 2rem 0; font-style: italic; color: #475569; background-color: #f8fafc; padding: 1.5rem; border-radius: 0.25rem; direction: rtl;">
+          return `<blockquote style="border-right: 4px solid #cbd5e1; padding-right: 1.25rem; margin: 1rem 0; font-style: italic; color: #475569; background-color: #f8fafc; padding: 1.5rem; border-radius: 0.25rem; direction: rtl;">
                     <p style="margin: 0; line-height: 1.75;">${clean(quoteData.text)}</p>
                     ${
                       quoteData.caption
@@ -95,20 +95,20 @@ export function renderBlocksToHtml(blocks: Block[]) {
 
           // Replicating the elegant divider line from your React component
           const captionHtml = poemData.caption
-            ? `<div style="margin-top: 2rem; display: flex; align-items: center; justify-content: center; gap: 1rem; color: #64748b;">
-                 <div style="height: 1px; width: 2rem; background-color: #cbd5e1;"></div>
+            ? `<div style="margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 1rem; color: #64748b;">
+                 <div style="height: 1px; width: 1rem; background-color: #64748b;"></div>
                  <span style="font-size: 0.9rem; font-weight: 500;">${clean(poemData.caption)}</span>
-                 <div style="height: 1px; width: 2rem; background-color: #cbd5e1;"></div>
+                 <div style="height: 1px; width: 1rem; background-color: #64748b;"></div>
                </div>`
             : "";
 
           return `
-            <div style="margin: 3rem 0; width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <blockquote style="margin: 3rem 0; width: 100%; display: flex; flex-direction: column; align-items: center;">
               <div style="width: 100%; max-width: 56rem; margin: 0 auto; padding: 0 1.5rem;">
                 ${poemLines}
               </div>
               ${captionHtml}
-            </div>
+            </blockquote>
           `;
 
         default:
