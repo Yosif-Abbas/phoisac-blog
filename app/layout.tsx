@@ -20,7 +20,9 @@ export const metadata: Metadata = {
 
   alternates: {
     types: {
-      "application/rss+xml": "https://www.phoisac.online/rss.xml",
+      "application/rss+xml": [
+        { url: "/rss.xml", title: "فويزاك الدالي - RSS Feed" },
+      ],
     },
   },
 

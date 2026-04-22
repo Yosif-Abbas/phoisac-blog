@@ -53,7 +53,7 @@ export function renderBlocksToHtml(blocks: Block[]) {
 
         case "image":
           const imageData = block.data as ImageBlock["data"];
-          const src = imageData.media?.public_url || imageData.url || "";
+          const src = imageData.file?.url || "";
           const alt = imageData.caption || "";
 
           return `<figure style="margin: 2.5rem 0; text-align: center; display: flex; flex-direction: column; align-items: center;">
