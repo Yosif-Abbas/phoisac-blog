@@ -1,5 +1,3 @@
-// Centralized CMS types - source of truth for Post/Profile/Media/Blocks
-
 import type { OutputData, OutputBlockData } from "@editorjs/editorjs";
 
 export type UUID = string;
@@ -62,6 +60,7 @@ export type QuoteBlock = OutputBlockData<
   "quote",
   { text: string; caption?: string }
 >;
+
 export type ImageBlock = OutputBlockData<
   "image",
   {
@@ -72,6 +71,8 @@ export type ImageBlock = OutputBlockData<
     // Direct URL (fallback)
     url?: string;
     caption?: string;
+    // Added to match the standard Editor.js output from your JSON
+    file?: { url: string };
   }
 >;
 
@@ -85,10 +86,10 @@ export type PoemBlock = OutputBlockData<
   { cols: Column[]; caption?: string; style?: string }
 >;
 
-// Unknown blocks are preserved but must include `data` (per Editor.js OutputBlockData)
 export type UnknownBlock = OutputBlockData<string, Record<string, unknown>>;
 
 export type Block =
+  | HeaderBlock // <-- Added here
   | ParagraphBlock
   | QuoteBlock
   | ImageBlock
