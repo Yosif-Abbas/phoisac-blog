@@ -69,47 +69,43 @@ export function renderBlocksToHtml(blocks: Block[]) {
           const poemData = block.data as PoemBlock["data"];
           const isClassic = poemData.style === "classic";
 
-          const poemLines = poemData.cols
+          const poemRows = poemData.cols
             ?.map((line: Column) => {
-              if (isClassic) {
-                // Uses flex-wrap and min-width to naturally stack on mobile, mimicking your React component
+              if (isClassic && line.ajuuz) {
                 return `
-                  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.25rem; font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif; font-size: 1.25rem; line-height: 1.8; color: #1f2937; direction: rtl;">
-                    <p style="flex: 1 1 45%; text-align: right; min-width: 250px;">${clean(line.sadr || "")}</p>
-                    ${
-                      line.ajuuz
-                        ? `<p style="flex: 1 1 45%; text-align: left; min-width: 250px;">${clean(line.ajuuz || "")}</p>`
-                        : ""
-                    }
-                  </div>
-                `;
-              } else {
-                return `
-                  <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 1.25rem; font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif; font-size: 1.25rem; line-height: 1.8; color: #1f2937; direction: rtl;">
-                    <p style="width: 100%;">${clean(line.sadr || "")}</p>
-                  </div>
-                `;
+                  <tr>
+                    <td align="right" width="45%" valign="top" style="font-family: serif; font-size: 1.3em; padding-bottom: 15px;">${clean(line.sadr || "")}</td>
+                    <td width="10%" align="center" valign="top" style="color: #cbd5e1; padding-bottom: 15px;">&nbsp;</td>
+                    <td align="left" width="45%" valign="top" style="font-family: serif; font-size: 1.3em; color: #cbd5e1; padding-bottom: 15px;">${clean(line.ajuuz || "")}</td>
+                  </tr>`;
               }
+              return `
+                <tr>
+                  <td colspan="3" align="center" valign="top" style="font-family: serif; font-size: 1.3em; padding-bottom: 15px;">${clean(line.sadr || "")}</td>
+                </tr>`;
             })
             .join("");
 
-          // Replicating the elegant divider line from your React component
-          const captionHtml = poemData.caption
-            ? `<div style="margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 1rem; color: #64748b;">
-                 <div style="height: 1px; width: 1rem; background-color: #64748b;"></div>
-                 <p style="font-size: 0.9rem; font-weight: 500;">${clean(poemData.caption)}</p>
-                 <div style="height: 1px; width: 1rem; background-color: #64748b;"></div>
-               </div>`
-            : "";
-
           return `
-            <div style="margin: 3rem 0; width: 100%; display: flex; flex-direction: column; align-items: center;">
-              <div style="width: 100%; max-width: 56rem; margin: 0 auto; padding: 0 1.5rem;">
-                ${poemLines}
-              </div>
-              ${captionHtml}
-            </div>
-          `;
+            <table width="100%" dir="rtl" border="0" cellpadding="0" cellspacing="0" style="margin: 3em 0; table-layout: fixed;">
+              ${poemRows}
+              ${
+                poemData.caption
+                  ? `
+                <tr>
+                  <td colspan="3" align="center" style="padding-top: 20px;">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="20" style="border-bottom: 1px solid #64748b;">&nbsp;</td>
+                        <td style="padding: 0 15px; color: #64748b; font-size: 0.9em; white-space: nowrap;">${clean(poemData.caption)}</td>
+                        <td width="20" style="border-bottom: 1px solid #64748b;">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>`
+                  : ""
+              }
+            </table>`;
 
         default:
           return "";
