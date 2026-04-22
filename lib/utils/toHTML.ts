@@ -28,25 +28,25 @@ export function renderBlocksToHtml(blocks: Block[]) {
           const headerData = block.data as HeaderBlock["data"];
 
           const level = headerData.level || 2;
-          return `<h${level} style="margin-top: 1.5em; margin-bottom: 0.75em; font-weight: 600; line-height: 1.3; color: #111827;">
+          return `<h${level} style="margin-top: 1.5em; margin-bottom: 0.75em; font-weight: 600; line-height: 1.3; color: #f8fafc;">
                     ${clean(headerData.text)}
                   </h${level}>`;
 
         case "paragraph":
           const paragraphData = block.data as ParagraphBlock["data"];
 
-          return `<p style="margin-bottom: 1.25em; line-height: 1.75; color: #374151;">
+          return `<p style="margin-bottom: 1.25em; line-height: 1.75; color: #f8fafc;">
                     ${clean(paragraphData.text)}
                   </p>`;
 
         case "quote":
           const quoteData = block.data as QuoteBlock["data"];
 
-          return `<blockquote style="border-right: 4px solid #cbd5e1; padding-right: 1.25rem; margin: 1rem 0; font-style: italic; color: #475569; background-color: #f8fafc; padding: 1.5rem; border-radius: 0.25rem; direction: rtl;">
-                    <p style="margin: 0; line-height: 1.75;">${clean(quoteData.text)}</p>
+          return `<blockquote style="margin: 1rem 0; color: #f8fafc;  padding: 1.5rem; border-radius: 0.25rem; direction: rtl; text-align: center;">
+                    <p style="margin: 0; line-height: 1.75;">«${clean(quoteData.text)}»</p>
                     ${
                       quoteData.caption
-                        ? `<footer style="margin-top: 0.75rem; font-size: 0.875em; color: #64748b; font-weight: 500;">— <cite>${clean(quoteData.caption)}</cite></footer>`
+                        ? `<footer style="margin-top: 0.75rem; font-size: 0.875em; color: #64748b; font-weight: 500;  text-align: center;">— <cite>${clean(quoteData.caption)}</cite> —</footer>`
                         : ""
                     }
                   </blockquote>`;
@@ -75,8 +75,8 @@ export function renderBlocksToHtml(blocks: Block[]) {
                 return `
                   <tr>
                     <td align="right" width="45%" valign="top" style="font-family: serif; font-size: 1.3em; padding-bottom: 15px;">${clean(line.sadr || "")}</td>
-                    <td width="10%" align="center" valign="top" style="color: #cbd5e1; padding-bottom: 15px;">&nbsp;</td>
-                    <td align="left" width="45%" valign="top" style="font-family: serif; font-size: 1.3em; color: #cbd5e1; padding-bottom: 15px;">${clean(line.ajuuz || "")}</td>
+                    <td width="10%" align="center" valign="top" style="color: #f8fafc; padding-bottom: 15px;">&nbsp;</td>
+                    <td align="left" width="45%" valign="top" style="font-family: serif; font-size: 1.3em; color: #f8fafc; padding-bottom: 15px;">${clean(line.ajuuz || "")}</td>
                   </tr>`;
               }
               return `
