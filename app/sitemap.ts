@@ -3,7 +3,7 @@ import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
-  const baseUrl = "https://phoisac.online";
+  const baseUrl = "https://www.phoisac.online";
 
   // 1. Fetch all blog post slugs and timestamps from Supabase
   // We don't use pagination here because the sitemap needs EVERY link
