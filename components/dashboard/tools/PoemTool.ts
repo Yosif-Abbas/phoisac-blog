@@ -43,7 +43,7 @@ export default class PoemTool implements BlockTool {
   }
 
   static get toolbox() {
-    return { title: "قصيدة", icon: "📜" };
+    return { title: "Poem", icon: "📜" };
   }
 
   static get inlineToolbar() {

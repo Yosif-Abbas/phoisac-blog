@@ -27,7 +27,7 @@ export default function Header() {
     // { name: "لوحة التحكم", href: "/dashboard" },
     { name: "كتابة منشور", href: "/dashboard/create-post" },
     { name: "تعديل منشور", href: "/dashboard/edit-post" },
-    { name: "الشعارات", href: "/dashboard/tags" },
+    { name: "الأوسمة", href: "/dashboard/tags" },
     { name: "الصفحات", href: "/dashboard/pages" },
   ];
 

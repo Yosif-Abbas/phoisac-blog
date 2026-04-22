@@ -18,6 +18,12 @@ export const metadata: Metadata = {
     default: "Phoisac Eldali | مدونة أدبية للشعر والرواية",
   },
 
+  alternates: {
+    types: {
+      "application/rss+xml": "https://www.phoisac.online/rss.xml",
+    },
+  },
+
   description:
     "مدونة أدبية متخصصة تضم مجموعة فريدة من القصائد الشعرية، والروايات العميقة، والنصوص الإبداعية. استكشف عالم المعاني والكلمات مع الكاتب Phoisac Eldali.",
 
