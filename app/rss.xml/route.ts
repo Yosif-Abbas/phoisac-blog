@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
 
 export async function GET() {
   const supabase = await createClient();
@@ -21,16 +20,11 @@ export async function GET() {
         <language>ar</language>
         <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
         <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
+
         ${posts
           ?.map((post) => {
             const imageUrl =
-              post.cover_image_url || `${siteUrl}/default-social-card.jpg`; // Always have a fallback!
-
-            // 2. Format the description to include the image for older readers
-            const descriptionWithImage = `
-              <img src="${imageUrl}" alt="Cover image for ${post.title}" />
-              <p>${post.excerpt || ""}</p>
-            `;
+              post.cover_image_url || `${siteUrl}/default-cover.jpg`;
 
             return `
               <item>
@@ -38,8 +32,13 @@ export async function GET() {
                 <link>${siteUrl}/blog/${post.slug}</link>
                 <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
                 <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
-                <enclosure url="${imageUrl}" length="0" type="image/webp" />
-                <description><![CDATA[${descriptionWithImage}]]></description>
+
+                <description><![CDATA[${post.excerpt || ""}]]></description>
+
+                <content:encoded><![CDATA[
+                  <img src="${imageUrl}" alt="Cover image for ${post.title}" />
+                  <p>${post.excerpt || ""}</p>
+                ]]></content:encoded>
               </item>
             `;
           })
@@ -47,9 +46,9 @@ export async function GET() {
       </channel>
     </rss>`;
 
-  return new NextResponse(feed, {
+  return new Response(feed, {
     headers: {
-      "Content-Type": "application/xml",
+      "Content-Type": "application/xml; charset=utf-8",
       "Cache-Control": "s-maxage=3600, stale-while-revalidate",
     },
   });
