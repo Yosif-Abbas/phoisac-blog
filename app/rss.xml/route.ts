@@ -8,7 +8,7 @@ export async function GET() {
 
   const { data: posts } = await supabase
     .from("posts")
-    .select("title, slug, excerpt, created_at")
+    .select("title, slug, excerpt, created_at, cover_image_url")
     .eq("status", "test")
     .order("created_at", { ascending: false });
 
@@ -22,17 +22,27 @@ export async function GET() {
         <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
         <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
         ${posts
-          ?.map(
-            (post) => `
-            <item>
-              <title><![CDATA[${post.title}]]></title>
-              <link>${siteUrl}/blog/${post.slug}</link>
-              <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
-              <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
-              <description><![CDATA[${post.excerpt || ""}]]></description>
-            </item>
-          `,
-          )
+          ?.map((post) => {
+            const imageUrl =
+              post.cover_image_url || `${siteUrl}/default-social-card.jpg`; // Always have a fallback!
+
+            // 2. Format the description to include the image for older readers
+            const descriptionWithImage = `
+              <img src="${imageUrl}" alt="Cover image for ${post.title}" />
+              <p>${post.excerpt || ""}</p>
+            `;
+
+            return `
+              <item>
+                <title><![CDATA[${post.title}]]></title>
+                <link>${siteUrl}/blog/${post.slug}</link>
+                <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
+                <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
+                <enclosure url="${imageUrl}" length="0" type="image/webp" />
+                <description><![CDATA[${descriptionWithImage}]]></description>
+              </item>
+            `;
+          })
           .join("")}
       </channel>
     </rss>`;
