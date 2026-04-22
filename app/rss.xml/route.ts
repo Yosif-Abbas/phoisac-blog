@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { renderBlocksToHtml } from "@/lib/utils/toHTML";
 
 export async function GET() {
   const supabase = await createClient();
@@ -7,7 +8,7 @@ export async function GET() {
 
   const { data: posts } = await supabase
     .from("posts")
-    .select("title, slug, excerpt, created_at, cover_image_url")
+    .select("title, slug, excerpt, created_at, cover_image_url, content")
     .eq("status", "test")
     .order("created_at", { ascending: false });
 
@@ -26,8 +27,13 @@ export async function GET() {
 
         ${posts
           ?.map((post) => {
-            const imageUrl =
-              post.cover_image_url || `${siteUrl}/default-cover.jpg`;
+            // This is the magic part: turn the JSON blocks into an HTML string
+            const fullContentHtml = renderBlocksToHtml(
+              post.content.blocks || [],
+            );
+            const coverImage = post.cover_image_url
+              ? `<img src="${post.cover_image_url}" />`
+              : "";
 
             return `
               <item>
@@ -35,13 +41,10 @@ export async function GET() {
                 <link>${siteUrl}/blog/${post.slug}</link>
                 <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
                 <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
-                <description><![CDATA[${post.excerpt || ""}]]></description>
-
+                
                 <content:encoded><![CDATA[
-                  <div style="margin-bottom: 20px;">
-                    <img src="${imageUrl}" alt="${post.title}" />
-                  </div>
-                  <p>${post.excerpt || ""}</p>
+                  ${coverImage}
+                  ${fullContentHtml}
                 ]]></content:encoded>
               </item>
             `;
