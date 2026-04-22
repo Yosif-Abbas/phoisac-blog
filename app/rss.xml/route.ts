@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { renderBlocksToHtml } from "@/lib/utils/toHTML";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   const supabase = await createClient();
@@ -53,9 +54,9 @@ export async function GET() {
       </channel>
     </rss>`;
 
-  return new Response(feed, {
+  return new NextResponse(feed, {
     headers: {
-      "Content-Type": "application/xml; charset=utf-8",
+      "Content-Type": "application/xml",
       "Cache-Control": "s-maxage=3600, stale-while-revalidate",
     },
   });
