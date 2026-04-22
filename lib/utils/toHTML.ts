@@ -7,10 +7,15 @@ import {
   PoemBlock,
   QuoteBlock,
 } from "@/types/cms";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 
 const clean = (content: string) => {
-  return content ? DOMPurify.sanitize(content) : "";
+  return sanitizeHtml(content, {
+    allowedTags: ["b", "i", "em", "strong", "a", "br"],
+    allowedAttributes: {
+      a: ["href", "target", "rel"],
+    },
+  });
 };
 
 export function renderBlocksToHtml(blocks: Block[]) {
