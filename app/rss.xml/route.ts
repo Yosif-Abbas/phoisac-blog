@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { renderBlocksToHtml } from "@/lib/utils/toHTML";
+import { Post } from "@/types/cms";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -10,8 +11,9 @@ export async function GET() {
 
     const { data: posts, error } = await supabase
       .from("posts")
-      .select("title, slug, excerpt, created_at, cover_image_url, content")
+      .select("*")
       .eq("status", "test")
+      .returns<Post[]>()
       .order("created_at", { ascending: false });
 
     if (error) throw error;
