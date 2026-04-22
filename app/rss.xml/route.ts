@@ -12,11 +12,14 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   const feed = `<?xml version="1.0" encoding="UTF-8" ?>
-    <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <rss version="2.0" 
+      xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/"
+    >
       <channel>
-        <title>The Novelist's Blog</title>
+        <title>فويزاك الدالي</title>
         <link>${siteUrl}</link>
-        <description>Thoughts on writing, poetry, and philosophy.</description>
+        <description>منصة رقمية مخصصة للأدب، الشعر، والقصص الطويلة.</description>
         <language>ar</language>
         <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
         <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
@@ -32,11 +35,12 @@ export async function GET() {
                 <link>${siteUrl}/blog/${post.slug}</link>
                 <guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
                 <pubDate>${new Date(post.created_at).toUTCString()}</pubDate>
-
                 <description><![CDATA[${post.excerpt || ""}]]></description>
 
                 <content:encoded><![CDATA[
-                  <img src="${imageUrl}" alt="Cover image for ${post.title}" />
+                  <div style="margin-bottom: 20px;">
+                    <img src="${imageUrl}" alt="${post.title}" />
+                  </div>
                   <p>${post.excerpt || ""}</p>
                 ]]></content:encoded>
               </item>
