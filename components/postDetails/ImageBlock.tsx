@@ -82,6 +82,7 @@ export default function ImageBlock({
             w-full h-auto max-h-[75vh] object-contain transition-all duration-700
             ${isLoading ? "opacity-0 scale-95" : "opacity-100 scale-100"}
           `}
+          
           loading="lazy"
           onLoad={() => setIsLoading(false)}
           onError={() => {

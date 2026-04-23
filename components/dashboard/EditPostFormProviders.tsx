@@ -13,7 +13,7 @@ export default function EditPostFormProviders() {
   const params = useParams();
   const slug = typeof params.slug === "string" ? params.slug : undefined;
 
-  const { updatePost, isPending } = useUpdatePost();
+  const { updatePost, isPending, uploadQueue } = useUpdatePost();
   const { post, isLoading, isError, isFetching, refetch } = usePost(
     slug as string,
   );
@@ -52,6 +52,7 @@ export default function EditPostFormProviders() {
             },
           );
         }}
+        uploadQueue={uploadQueue}
         isSubmitting={isPending}
         submitLabel="حفظ التعديلات"
       />

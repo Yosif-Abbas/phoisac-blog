@@ -6,12 +6,14 @@ import AdminActions from "./dashboard/AdminActions";
 // ServerLayoutContent.tsx
 export default function ServerLayoutContent({
   children,
+  logo,
 }: {
   children: React.ReactNode;
+  logo: React.ReactNode;
 }) {
   return (
     <div className="min-h-dvh flex flex-col bg-background text-foreground">
-      <Header />
+      <Header logo={logo} />
 
       <div className="grow w-full max-w-[1440px] mx-auto py-4 lg:py-8 flex flex-col">
         <div className="grow grid grid-rows-[auto_1fr] lg:grid-rows-1 lg:grid-cols-[225px_1fr_225px] gap-x-6 gap-y-2">

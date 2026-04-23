@@ -1,31 +1,18 @@
-"use client";
-
-import { Check, Copyright, Rss } from "lucide-react";
+import { Copyright } from "lucide-react";
 import CurrentYear from "./CurrentYear";
 import Link from "next/link";
-import { useState } from "react";
+import RssButton from "./RssButton";
+import { getSiteSettings } from "@/services/server/settings";
 
-export default function Footer() {
+export default async function Footer() {
+  const settings = await getSiteSettings();
+  const siteName = settings?.full_name || "فويزاك الدالي";
+
   const navLinks = [
     { name: "الرئيسية", href: "/" },
     { name: "المدونة", href: "/blog" },
     { name: "عن الكاتب", href: "/about" },
   ];
-
-  const [rssCopied, setRssCopied] = useState(false);
-
-  const copyRssLink = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    const rssUrl = `${window.location.origin}/rss.xml`;
-
-    try {
-      await navigator.clipboard.writeText(rssUrl);
-      setRssCopied(true);
-      setTimeout(() => setRssCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy RSS link", err);
-    }
-  };
 
   return (
     <footer className="w-full  border-t border-card-hover bg-background/50 backdrop-blur-sm">
@@ -34,7 +21,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-6">
           <div className="space-y-2">
             <h3 className="text-xl font-bold tracking-tight text-foreground/90">
-              فويزاك الدالي
+              {siteName}
             </h3>
             {/* <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
               منصة رقمية مخصصة للأدب، الشعر، والقصص الطويلة.
@@ -51,31 +38,7 @@ export default function Footer() {
                 {link.name}
               </Link>
             ))}
-            <button
-              onClick={copyRssLink}
-              className="flex gap-x-2 text-muted-foreground hover:text-[#ee802f] transition-all group"
-              title="Copy RSS Feed Link"
-            >
-              <span
-                className={`font-medium uppercase tracking-wider transition-opacity duration-300 `}
-                dir="rtl"
-              >
-                {rssCopied ? "تم النسخ" : "RSS خلاصة"}
-              </span>
-
-              {rssCopied ? (
-                <Check
-                  size={16}
-                  className="text-green-500 animate-in zoom-in duration-300"
-                />
-              ) : (
-                <Rss
-                  size={16}
-                  strokeWidth={2.5}
-                  className="group-hover:scale-110 transition-transform"
-                />
-              )}
-            </button>
+            <RssButton />
           </nav>
         </div>
 
@@ -88,7 +51,7 @@ export default function Footer() {
             <CurrentYear />
             <span className="font-medium">
               <span className="text-foreground font-semibold  ">
-                فويزاك الدالي
+                {siteName}
               </span>
               . جميع الحقوق محفوظة.
             </span>

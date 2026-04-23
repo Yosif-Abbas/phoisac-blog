@@ -20,7 +20,7 @@ type UploadStatus = {
 
 export function useCreatePost() {
   const [uploadQueue, setUploadQueue] = useState<UploadStatus[]>([]);
-  const { user } = useCurrentUser();
+  const { user, isDeveloper } = useCurrentUser();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (post: {
@@ -146,6 +146,7 @@ export function useCreatePost() {
           .map((t) => String(t.id)),
         cover_image_url: coverImageUrl,
         author_id: user.id,
+        status: isDeveloper ? "test" : "published",
       });
     },
   });

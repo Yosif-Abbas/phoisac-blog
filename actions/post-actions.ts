@@ -15,6 +15,7 @@ export async function createPostAction(payload: {
   tagIds: string[]; // Only pass the IDs to save payload size
   cover_image_url?: string;
   author_id: string;
+  status: string;
 }) {
   const supabase = await createClient();
 
@@ -40,7 +41,7 @@ export async function createPostAction(payload: {
         content: payload.content,
         excerpt: payload.excerpt,
         created_at: payload.created_at,
-        status: "published",
+        status: payload.status,
         cover_image_url: firstImageUrl ?? null,
         author_id: payload.author_id,
       },
@@ -79,6 +80,7 @@ export async function updatePostAction(payload: {
   content: StructuredContent; // Editor.js OutputData
   cover_image_url?: string;
   newTagIds: string[];
+  status: string;
 }) {
   const supabase = await createClient();
 
@@ -111,7 +113,7 @@ export async function updatePostAction(payload: {
     content: payload.content,
     excerpt: payload.excerpt,
     updated_at: payload.updated_at,
-    status: "published",
+    status: payload.status,
     author_id: payload.author_id,
   };
 

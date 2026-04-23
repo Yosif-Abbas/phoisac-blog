@@ -9,13 +9,14 @@ import Loading from "@/components/ui/Loading";
 
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Logo from "@/components/ui/Logo";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.phoisac.online/"),
 
   title: {
     template: "%s | Phoisac Eldali",
-    default: "Phoisac Eldali | مدونة أدبية للشعر والرواية",
+    default: "Phoisac Eldali",
   },
 
   alternates: {
@@ -112,7 +113,9 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground min-h-dvh flex flex-col">
         <Suspense fallback={<Loading />}>
           <Providers>
-            <ServerLayoutContent>{children}</ServerLayoutContent>
+            <ServerLayoutContent logo={<Logo />}>
+              {children}
+            </ServerLayoutContent>
           </Providers>
         </Suspense>
         <Analytics />

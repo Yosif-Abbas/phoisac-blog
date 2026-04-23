@@ -3,8 +3,16 @@ import PostCardSkeleton from "@/components/skeleton/PostCardSkeleton";
 import BlogPostsHydration from "@/components/posts/BlogPostsHydration";
 import SearchInputSkeleton from "@/components/skeleton/blog/SearchSkeleton";
 import TagsFilterSkeleton from "@/components/skeleton/blog/TagsFilterSkeleton";
+import { Metadata } from "next";
+import { getSiteSettings } from "@/services/server/settings";
 
-export default function Blog() {
+export const metadata: Metadata = {
+  title: "مدونة أدبية",
+};
+
+export default async function Blog() {
+  const settings = await getSiteSettings();
+
   return (
     <div className="flex flex-col gap-y-6 h-full w-full">
       <div className="flex items-baseline gap-x-2 border-b border-card-hover pb-4">
@@ -12,7 +20,7 @@ export default function Blog() {
       </div>
       <div className="flex items-baseline gap-x-2 border-b border-card-hover pb-4">
         <p className="text-muted-foreground">
-          استكشف أحدث المنشورات والمقالات.
+          {settings.blog_page_description}
         </p>
       </div>
 

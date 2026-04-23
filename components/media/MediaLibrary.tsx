@@ -34,7 +34,6 @@ export default function MediaLibrary() {
     const alt = photo?.alt;
     const title = photo?.title;
     const sizes = imageProps?.sizes;
-    console.log(photo);
     return (
       <div
         className="group relative overflow-hidden rounded-md"
@@ -42,6 +41,7 @@ export default function MediaLibrary() {
       >
         <Image
           fill
+          loading="eager"
           src={photo.src}
           alt={alt}
           title={title}

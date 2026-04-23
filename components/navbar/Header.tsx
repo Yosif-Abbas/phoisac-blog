@@ -8,9 +8,12 @@ import { useCurrentUser } from "@/hooks/auth/useCurrentUser";
 import LoginModal from "../Modal/LoginModal";
 import ThemeButton from "./ThemeButton";
 import Logout from "./Logout";
-import Logo from "../ui/Logo";
 
-export default function Header() {
+interface HeaderProps {
+  logo: React.ReactNode; // This is the "slot"
+}
+
+export default function Header({ logo }: HeaderProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -29,6 +32,7 @@ export default function Header() {
     { name: "تعديل منشور", href: "/dashboard/edit-post" },
     { name: "الأوسمة", href: "/dashboard/tags" },
     { name: "الصفحات", href: "/dashboard/pages" },
+    { name: "الاعدادات", href: "/dashboard/settings/home-page" },
   ];
 
   const isActive = (path: string) => pathname === path;
@@ -65,11 +69,11 @@ export default function Header() {
   }, [isOpen]);
 
   return (
-    <header className="sticky lg:top-4 z-50 w-full lg:px-6">
-      <div className="max-w-[1440px] mx-auto bg-container/80 backdrop-blur-md border border-[#E5E7EB] dark:border-card-hover shadow-lg lg:rounded-2xl h-16 px-6 flex items-center justify-between">
+    <header className="sticky lg:top-4 z-50 w-full lg:px-6 ">
+      <div className="max-w-[1440px] mx-auto bg-background/80 backdrop-blur-md border border-[#E5E7EB] dark:border-card-hover shadow-lg lg:rounded-2xl h-16 px-6 flex items-center justify-between">
         {/* Left Side: Logo & Desktop Nav */}
         <div className="flex items-center gap-x-8">
-          <Logo />
+          {logo}
           <nav className="hidden md:flex items-center gap-x-6">
             <ul className="hidden md:flex items-center gap-x-6 ">
               {navLinks.map((link) => (

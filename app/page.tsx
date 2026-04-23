@@ -1,13 +1,16 @@
 import Hero from "@/components/home/Hero";
 import LatestPostsHydration from "@/components/home/LatestPostsHydration";
 import PostCardSkeleton from "@/components/skeleton/PostCardSkeleton";
+import { getSiteSettings } from "@/services/server/settings";
 import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function Home() {
+  const settings = await getSiteSettings();
+
   return (
     <div className="flex flex-col w-full max-w-4xl mx-auto px-4 py-12 md:py-24 gap-y-24">
-      <Hero />
+      <Hero settings={settings} />
 
       <section className="flex flex-col gap-y-12">
         <div className="flex items-baseline justify-between ">

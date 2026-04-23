@@ -37,7 +37,13 @@ export default function LoginModal({ title }: ModalTriggerProps) {
             className="flex items-center justify-center gap-x-3 w-full bg-white dark:bg-white/5 border border-[#E5E7EB] dark:border-card-hover py-3 rounded-2xl text-foreground font-medium hover:bg-gray-50 dark:hover:bg-white/10 hover:border-emerald-500/50 transition-all shadow-sm"
             onClick={() => loginWithGoogle()}
           >
-            <Image height={20} width={20} src="/google.svg" alt="google" />
+            <Image
+              height={20}
+              width={20}
+              src="/google.svg"
+              alt="google"
+              loading="eager"
+            />
             <span>المتابعة باستخدام Google</span>
           </button>
 

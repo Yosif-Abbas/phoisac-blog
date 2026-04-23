@@ -32,7 +32,7 @@ type UpdatePostPayload = {
 
 export function useUpdatePost() {
   const queryClient = useQueryClient();
-  const { user } = useCurrentUser();
+  const { user, isDeveloper } = useCurrentUser();
   const [uploadQueue, setUploadQueue] = useState<UploadStatus[]>([]);
 
   const { mutate: updatePost, isPending } = useMutation({
@@ -162,6 +162,7 @@ export function useUpdatePost() {
         updated_at: updateTime,
         cover_image_url: coverImageUrl,
         author_id: user.id,
+        status: isDeveloper ? "test" : "published",
       });
     },
 

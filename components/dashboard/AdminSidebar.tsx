@@ -1,6 +1,12 @@
 "use client";
 
-import { CirclePlus, PanelsTopLeft, Pencil, Tags } from "lucide-react";
+import {
+  CirclePlus,
+  PanelsTopLeft,
+  Pencil,
+  Settings,
+  Tags,
+} from "lucide-react";
 
 import SidebarLink from "./SidebarLink";
 import AdminBadge from "../ui/AdminBadge";
@@ -44,6 +50,11 @@ export default function AdminSidebar() {
             href="/dashboard/pages"
             icon={<PanelsTopLeft size={18} />}
             label="الصفحات"
+          />
+          <SidebarItem
+            href="/dashboard/settings/home-page"
+            icon={<Settings size={18} />}
+            label="الاعدادات"
           />
         </ul>
       </nav>

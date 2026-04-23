@@ -13,5 +13,6 @@ export function useCurrentUser() {
     isLoading,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin" || user?.role === "developer",
+    isDeveloper: user?.role === "developer",
   };
 }
