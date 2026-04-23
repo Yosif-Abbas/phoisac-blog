@@ -18,11 +18,13 @@ export default async function Blog() {
       <div className="flex items-baseline gap-x-2 border-b border-card-hover pb-4">
         <h1 className="text-3xl font-bold text-foreground">المدونة</h1>
       </div>
-      <div className="flex items-baseline gap-x-2 border-b border-card-hover pb-4">
-        <p className="text-muted-foreground">
-          {settings.blog_page_description}
-        </p>
-      </div>
+      {settings.blog_page_description && (
+        <div className="flex items-baseline gap-x-2 border-b border-card-hover pb-4">
+          <p className="text-muted-foreground">
+            {settings.blog_page_description}
+          </p>
+        </div>
+      )}
 
       <Suspense
         fallback={

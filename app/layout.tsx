@@ -27,8 +27,7 @@ export const metadata: Metadata = {
     },
   },
 
-  description:
-    "مدونة أدبية متخصصة تضم مجموعة فريدة من القصائد الشعرية، والروايات العميقة، والنصوص الإبداعية. استكشف عالم المعاني والكلمات مع الكاتب Phoisac Eldali.",
+  description: "مدونة لتخليق كلمات جديدة وإحياء اخرى.",
 
   keywords: [
     "أدب",
@@ -53,15 +52,14 @@ export const metadata: Metadata = {
     url: "https://www.phoisac.online",
     siteName: "Phoisac Eldali",
     title: "Phoisac Eldali | مدونة أدبية",
-    description:
-      "مدونة أدبية متخصصة تضم مجموعة فريدة من القصائد الشعرية، والروايات العميقة، والنصوص الإبداعية. استكشف عالم المعاني والكلمات مع الكاتب Phoisac Eldali. ",
+    description: "مدونة لتخليق كلمات جديدة وإحياء اخرى.",
 
     images: [
       {
         url: "/logo.jpg",
         width: 300,
         height: 300,
-        alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
+        alt: "Phoisac Eldali - مدونة لتخليق كلمات جديدة وإحياء اخرى",
       },
     ],
   },
@@ -69,14 +67,13 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Phoisac Eldali | مدونة أدبية",
-    description:
-      "مدونة أدبية متخصصة تضم مجموعة فريدة من القصائد الشعرية، والروايات العميقة، والنصوص الإبداعية. استكشف عالم المعاني والكلمات مع الكاتب Phoisac Eldali.",
+    description: "مدونة لتخليق كلمات جديدة وإحياء اخرى.",
     images: [
       {
         url: "/logo.jpg",
         width: 300,
         height: 300,
-        alt: "Phoisac Eldali - مدونة أدبية متخصصة في الشعر والرواية",
+        alt: "Phoisac Eldali - مدونة لتخليق كلمات جديدة وإحياء اخرى",
       },
     ],
   },

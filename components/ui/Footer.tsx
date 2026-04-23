@@ -23,9 +23,9 @@ export default async function Footer() {
             <h3 className="text-xl font-bold tracking-tight text-foreground/90">
               {siteName}
             </h3>
-            {/* <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-              منصة رقمية مخصصة للأدب، الشعر، والقصص الطويلة.
-            </p> */}
+            <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
+              مدونة لتخليق كلمات جديدة وإحياء اخرى.
+            </p>
           </div>
 
           <nav className="flex flex-wrap gap-x-8 gap-y-4 items-center text-xs">
