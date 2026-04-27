@@ -11,7 +11,7 @@ export async function GET() {
     const { data: posts, error } = await supabase
       .from("posts")
       .select("*")
-      .eq("status", "test")
+      .eq("status", "published")
       .order("created_at", { ascending: false });
 
     if (error) throw error;

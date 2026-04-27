@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: posts } = await supabase
     .from("posts")
     .select("slug, updated_at, created_at")
-    .eq("status", "test")
+    .eq("status", "published")
     .order("created_at", { ascending: false });
 
   // 2. Map posts to the sitemap format
