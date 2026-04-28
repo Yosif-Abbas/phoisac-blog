@@ -19,6 +19,7 @@ import { Button } from "../ui/Button";
 import { useTags } from "@/hooks/tags/useTags";
 import QueryErrorRetry from "../ui/QueryErrorRetry";
 import EditorFormSkeleton from "../skeleton/EditorFormSkeleton";
+import { generateSlug } from "@/lib/utils/media";
 
 // Define what the form expects
 type UploadStatus = {
@@ -32,6 +33,7 @@ type PostFormData = {
   content: StructuredContent;
   tags: Tag[];
   excerpt?: string;
+  slug: string;
 };
 
 interface PostFormProps {
@@ -222,6 +224,7 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
         content: editorData,
         tags,
         excerpt: excerpt.trim() || getExcerptFromEditor(editorData),
+        slug: generateSlug(title.trim()),
       };
 
       // 3. Validate Tags (Optional, but good practice)

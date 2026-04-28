@@ -76,11 +76,17 @@ function SidebarItem({
     <li>
       <SidebarLink
         href={href}
-        className="flex items-center gap-x-3 px-4 py-3 rounded-xl transition-all hover:bg-white/5 hover:text-primary group"
+        className="
+      flex items-center gap-x-3 px-4 py-3 rounded-xl
+      transition-all
+      hover:bg-card hover:text-primary
+      group
+    "
       >
         <span className="text-muted-foreground group-hover:text-primary transition-colors">
           {icon}
         </span>
+
         <span className="font-medium">{label}</span>
       </SidebarLink>
     </li>

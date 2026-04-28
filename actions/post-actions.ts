@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generateSlug } from "@/lib/utils/media";
 import type { StructuredContent } from "@/types/cms";
 import { revalidatePath } from "next/cache";
 
@@ -27,17 +26,13 @@ export async function createPostAction(payload: {
 
   const finalTitle = await getUniqueTitle(supabase, payload.title);
 
-  const finalSlug = payload.slug.includes(payload.title)
-    ? payload.slug
-    : generateSlug(finalTitle);
-
   // 1. Insert the Post
   const { data: post, error: postError } = await supabase
     .from("posts")
     .insert([
       {
         title: finalTitle,
-        slug: finalSlug,
+        slug: payload.slug,
         content: payload.content,
         excerpt: payload.excerpt,
         created_at: payload.created_at,

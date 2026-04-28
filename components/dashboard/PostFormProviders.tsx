@@ -26,12 +26,12 @@ export default function PostFormProviders() {
         onSubmit={(data) => {
           // 2. Pass the callbacks directly to the mutate function!
           createPost(data, {
-            onSuccess: () => {
+            onSuccess: (_, post) => {
               // Clear form inputs on success
               formRef.current?.reset?.();
               queryClient.invalidateQueries({ queryKey: ["posts"] });
               toast.success("تم نشر المقال بنجاح!");
-              router.push("/blog");
+              router.push(`/blog/${post.slug ? post.slug : ""}`);
               router.refresh();
             },
             onError: (error) => {

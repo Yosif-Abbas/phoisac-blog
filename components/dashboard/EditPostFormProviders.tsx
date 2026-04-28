@@ -3,13 +3,14 @@
 import React, { useRef } from "react";
 import { TagsProvider } from "./context/TagsContext";
 import PostForm, { PostFormHandle } from "./PostForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { usePost } from "@/hooks/posts/usePost";
 import { useUpdatePost } from "@/hooks/posts/useUpdatePost";
 import QueryErrorRetry from "../ui/QueryErrorRetry";
 import EditorFormSkeleton from "../skeleton/EditorFormSkeleton";
 
 export default function EditPostFormProviders() {
+  const router = useRouter();
   const params = useParams();
   const slug = typeof params.slug === "string" ? params.slug : undefined;
 
@@ -34,6 +35,7 @@ export default function EditPostFormProviders() {
           content: post.content,
           tags: post.tags,
           excerpt: post.excerpt || "",
+          slug: post.slug,
         }}
         onSubmit={(formData) => {
           updatePost(
@@ -48,6 +50,8 @@ export default function EditPostFormProviders() {
             {
               onSuccess: () => {
                 formRef.current?.reset?.();
+                router.push(`/blog/${post.slug ? post.slug : ""}`);
+                router.refresh();
               },
             },
           );

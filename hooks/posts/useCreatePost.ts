@@ -5,7 +5,6 @@ import { createPostAction } from "@/actions/post-actions";
 import { useState } from "react";
 import { useCurrentUser } from "../auth/useCurrentUser";
 import {
-  generateSlug,
   generateSquareThumbnail,
   generateStoragePath,
   optimizeImageBeforeUpload,
@@ -28,6 +27,7 @@ export function useCreatePost() {
       content: StructuredContent;
       tags: Tag[];
       excerpt?: string;
+      slug: string;
     }) => {
       const postTime = Date.now();
 
@@ -53,8 +53,6 @@ export function useCreatePost() {
         return { name: f.name, status: "waiting" as const, progress: 0 };
       });
       setUploadQueue(initialQueue);
-
-      const slug = generateSlug(post.title);
 
       let currentImageIndex = 0;
 
@@ -137,7 +135,7 @@ export function useCreatePost() {
 
       return await createPostAction({
         title: post.title,
-        slug,
+        slug: post.slug,
         content: { blocks: updatedBlocks },
         excerpt: post.excerpt,
         created_at: new Date(postTime).toISOString(),
