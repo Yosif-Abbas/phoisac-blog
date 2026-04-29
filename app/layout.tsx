@@ -78,6 +78,15 @@ export const metadata: Metadata = {
     ],
   },
 
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+
   // other: {
   //   "fb:app_id": "YOUR_FACEBOOK_APP_ID_HERE", // Leave empty or remove if you don't use Facebook Insights
   // },
