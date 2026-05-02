@@ -11,9 +11,7 @@ export default function Search() {
   const { replace } = useRouter();
 
   // Initialize from URL, but let local state be the boss after that.
-  const [query, setQuery] = useState(
-    searchParams.get("search")?.toString() || "",
-  );
+  const [query, setQuery] = useState(searchParams.get("s")?.toString() || "");
   const [isTyping, setIsTyping] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -21,9 +19,9 @@ export default function Search() {
   const executeSearch = (term: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (term) {
-      params.set("search", term);
+      params.set("s", term);
     } else {
-      params.delete("search");
+      params.delete("s");
     }
 
     startTransition(() => {

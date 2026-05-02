@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 
 export function usePosts() {
   const searchParams = useSearchParams();
-  const searchTerm = searchParams.get("search") || "";
+  const searchTerm = searchParams.get("s") || "";
   const tags = searchParams.getAll("tag").sort();
 
   return useInfiniteQuery({
