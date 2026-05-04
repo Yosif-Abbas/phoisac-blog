@@ -1,8 +1,5 @@
 import { updateSettingsAction } from "@/actions/settings-actions";
-import {
-  generateSquareThumbnail,
-  generateStoragePath,
-} from "@/lib/utils/media";
+import { generateStoragePath, optimizeAvatarClient } from "@/lib/utils/media";
 import { uploadImage } from "@/services/client/posts";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -22,14 +19,16 @@ export function useUpdatePersonalSettings() {
       let finalIconUrl = data.current_icon_url;
 
       if (data.icon_image_file) {
-        const thumbFile = await generateSquareThumbnail(
-          data.icon_image_file,
-          300,
+        // 1. Safely compress to 300x300 webp using Web Workers (no Canvas!)
+        const optimizedIcon = await optimizeAvatarClient(data.icon_image_file);
+
+        // 2. Generate path and upload directly via client
+        const path = generateStoragePath(optimizedIcon.name, "settings");
+        const uploadResult = await uploadImage(
+          optimizedIcon,
+          path,
+          "post-images",
         );
-
-        const path = generateStoragePath(thumbFile.name, "settings");
-
-        const uploadResult = await uploadImage(thumbFile, path, "post-images");
 
         if (uploadResult.error) throw new Error(uploadResult.error);
         finalIconUrl = uploadResult.url!;

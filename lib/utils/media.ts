@@ -39,16 +39,20 @@ export function generateStoragePath(
 }
 
 export async function optimizeImageBeforeUpload(file: File): Promise<File> {
+  // 700KB threshold - incredibly safe for Next.js 1MB limits
+  if (file.size < 0.7 * 1024 * 1024) return file;
+
   const options = {
-    maxSizeMB: 1.5,
+    maxSizeMB: 0.9,
     maxWidthOrHeight: 1920,
     useWebWorker: true,
-    fileType: "image/webp",
-    initialQuality: 0.9,
+    fileType: "image/webp" as const,
+    initialQuality: 0.8,
   };
 
   try {
     const compressedBlob = await imageCompression(file, options);
+    // Notice we only replace the extension if it's not already webp
     const newFileName = file.name.replace(/\.[^/.]+$/, ".webp");
 
     return new File([compressedBlob], newFileName, { type: "image/webp" });
@@ -57,62 +61,24 @@ export async function optimizeImageBeforeUpload(file: File): Promise<File> {
     return file;
   }
 }
-
-export async function generateSquareThumbnail(
-  file: File,
-  size = 300,
-): Promise<File> {
-  return new Promise((resolve, reject) => {
-    // Basic type check
-    if (!file.type.startsWith("image/")) {
-      return reject(new Error("File is not an image"));
-    }
-
-    const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-
-    img.onload = () => {
-      // Always clean up the memory link
-      URL.revokeObjectURL(objectUrl);
-
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext("2d");
-
-        if (!ctx) throw new Error("Canvas context failed");
-
-        const minDim = Math.min(img.width, img.height);
-        const startX = (img.width - minDim) / 2;
-        const startY = (img.height - minDim) / 2;
-
-        ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size);
-
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              const newFileName = file.name.replace(/\.[^/.]+$/, "_thumb.webp");
-              resolve(new File([blob], newFileName, { type: "image/webp" }));
-            } else {
-              reject(new Error("Blob conversion failed"));
-            }
-          },
-          "image/webp",
-          0.8,
-        );
-      } catch (e) {
-        reject(e);
-      }
+// lib/utils/media.ts
+export async function optimizeAvatarClient(file: File): Promise<File> {
+  try {
+    const { default: imageCompression } =
+      await import("browser-image-compression");
+    const options = {
+      maxSizeMB: 0.1, // 100KB is perfect for a 300x300 icon
+      maxWidthOrHeight: 300,
+      useWebWorker: true,
+      fileType: "image/webp" as const,
     };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(objectUrl);
-      reject(new Error("Image loading failed"));
-    };
-
-    img.src = objectUrl;
-  });
+    const compressedBlob = await imageCompression(file, options);
+    const newFileName = file.name.replace(/\.[^/.]+$/, "_avatar.webp");
+    return new File([compressedBlob], newFileName, { type: "image/webp" });
+  } catch (error) {
+    console.warn("Avatar compression failed:", error);
+    return file; // Fallback
+  }
 }
 
 // utils/image.ts

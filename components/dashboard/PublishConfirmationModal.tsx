@@ -2,7 +2,7 @@
 
 import Modal from "../Modal/Modal";
 import { Button } from "../ui/Button";
-import { CheckCircle2, CloudUpload, Loader2 } from "lucide-react";
+import { Check, CheckCircle2, CloudUpload, Loader2 } from "lucide-react";
 
 type UploadStatus = {
   name: string;
@@ -82,9 +82,8 @@ export default function PublishConfirmationModal({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-x-2">
-                <Loader2 className="animate-spin text-primary" size={18} />
                 <span className="text-sm font-medium text-foreground">
-                  يرجى الانتظار...
+                  جاري رفع الصور...
                 </span>
               </div>
               {/* <span className="text-xs text-muted-foreground italic">
@@ -125,13 +124,22 @@ export default function PublishConfirmationModal({
                               {file.name}
                             </span>
                           </div>
-                          <span className="font-mono text-[10px] bg-tag px-2 py-0.5 rounded-full text-primary font-bold">
-                            {Math.round(file.progress)}%
+                          <span className="text-[10px] px-2 py-0.5 rounded-full">
+                            {/*{Math.round(file.progress)}%*/}
+
+                            {isDone ? (
+                              <Check className="text-emerald-500" size={14} />
+                            ) : (
+                              <Loader2
+                                className="animate-spin text-primary"
+                                size={14}
+                              />
+                            )}
                           </span>
                         </div>
 
                         {/* ENHANCED PROGRESS BAR */}
-                        <div className="relative h-2 w-full bg-secondary/50 rounded-full overflow-hidden border border-white/5">
+                        {/* <div className="relative h-2 w-full bg-secondary/50 rounded-full overflow-hidden border border-white/5">
                           <div
                             className={`
                             h-full bg-primary relative transition-all duration-500 ease-out rounded-full
@@ -139,7 +147,7 @@ export default function PublishConfirmationModal({
                           `}
                             style={{ width: `${file.progress}%` }}
                           />
-                        </div>
+                        </div> */}
                       </div>
                     );
                   })}

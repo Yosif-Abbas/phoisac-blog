@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import type { StructuredContent } from "../../types/post";
 import PoemTool from "./tools/PoemTool";
 import imageCompression from "browser-image-compression";
+import { optimizeImageBeforeUpload } from "@/lib/utils/media";
 
 interface EditorProps {
   onReady?: () => void; // Add this prop
@@ -126,19 +127,17 @@ const Editor = (
                 },
 
                 async uploadByFile(file: File) {
-                  const compressedFile = await imageCompression(file, {
-                    maxSizeMB: 1,
-                    maxWidthOrHeight: 1920,
-                    useWebWorker: true,
-                  });
+                  // 1. Pass the file through your new, highly optimized function
+                  const safeFile = await optimizeImageBeforeUpload(file);
 
-                  const previewUrl = URL.createObjectURL(compressedFile);
+                  // 2. Create the preview from the SAFE, small file
+                  const previewUrl = URL.createObjectURL(safeFile);
 
                   return {
                     success: 1,
                     file: {
                       url: previewUrl,
-                      localFile: file,
+                      localFile: safeFile,
                     },
                   };
                 },

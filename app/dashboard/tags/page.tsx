@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 export default function Tags() {
   return (
-    <div className="flex flex-col gap-y-10 h-full w-full animate-in fade-in duration-500">
+    <div className="flex flex-col gap-y-10 h-full w-full ">
       <div className="flex items-baseline gap-x-2 border-b border-card-hover pb-4">
         <h1 className="text-3xl font-bold text-foreground">
           لوحة تحكم المسؤول

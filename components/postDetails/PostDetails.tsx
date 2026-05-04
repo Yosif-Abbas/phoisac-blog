@@ -64,20 +64,22 @@ export default function PostDetails({ slug }: { slug: string }) {
             view_count={post.view_count}
           />
 
-          <div className="flex flex-wrap gap-2">
-            {(
-              (Array.isArray(post?.tags) ? post.tags : [post?.tags]).filter(
-                Boolean,
-              ) as Tag[]
-            ).map((tag) => (
-              <span
-                key={tag.id}
-                className="text-xs font-medium px-3 py-1 rounded-full bg-primary/5 text-primary border border-primary/10"
-              >
-                {tag.name}
-              </span>
-            ))}
-          </div>
+          {post?.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {(
+                (Array.isArray(post?.tags) ? post.tags : [post?.tags]).filter(
+                  Boolean,
+                ) as Tag[]
+              ).map((tag) => (
+                <span
+                  key={tag.id}
+                  className="text-xs font-medium px-3 py-1 rounded-full bg-primary/5 text-primary border border-primary/10"
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </header>
 

@@ -1,15 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import type { StructuredContent, Tag } from "@/types/cms";
-import { uploadImage } from "@/services/client/posts";
+
 import { createPostAction } from "@/actions/post-actions";
 import { useState } from "react";
 import { useCurrentUser } from "../auth/useCurrentUser";
-import {
-  generateSquareThumbnail,
-  generateStoragePath,
-  optimizeImageBeforeUpload,
-} from "@/lib/utils/media";
+
 import { normalizeBlock } from "@/lib/utils/types";
+import { processAndUploadImageAction } from "@/actions/upload-actions";
 
 type UploadStatus = {
   name: string;
@@ -56,75 +53,55 @@ export function useCreatePost() {
 
       let currentImageIndex = 0;
 
-      const updatedBlocks = await Promise.all(
-        post.content.blocks.map(async (block) => {
-          if (block.type === "image") {
-            const file = getLocalFile(block);
-            if (file) {
-              const fileIndex = currentImageIndex++;
+      const updatedBlocks = [];
 
-              // Base path for the main image
-              const filePath = generateStoragePath(file.name, "blog");
-              // Path for the thumbnail (replace .webp with _thumb.webp)
-              const thumbFilePath = filePath.replace(
-                /\.[^/.]+$/,
-                "_thumb.webp",
-              );
+      for (const block of post.content.blocks) {
+        if (block.type === "image") {
+          const originalFile = getLocalFile(block);
 
-              setUploadQueue((prev) =>
-                prev.map((item, i) =>
-                  i === fileIndex ? { ...item, status: "uploading" } : item,
-                ),
-              );
+          if (originalFile) {
+            const fileIndex = currentImageIndex++;
 
-              // 1. Process both images in parallel
-              const [optimizedImageFile, thumbnailFile] = await Promise.all([
-                optimizeImageBeforeUpload(file),
-                generateSquareThumbnail(file),
-              ]);
+            setUploadQueue((prev) =>
+              prev.map((item, i) =>
+                i === fileIndex
+                  ? { ...item, status: "uploading", progress: 10 }
+                  : item,
+              ),
+            );
 
-              // 2. Upload both images to Supabase concurrently
-              const [mainUpload, thumbUpload] = await Promise.all([
-                uploadImage(optimizedImageFile, filePath, "post-images"),
-                uploadImage(thumbnailFile, thumbFilePath, "post-images"),
-              ]);
+            const formData = new FormData();
+            formData.append("file", originalFile);
 
-              if (mainUpload.error || thumbUpload.error) {
-                setUploadQueue((prev) =>
-                  prev.map((item, i) =>
-                    i === fileIndex ? { ...item, status: "error" } : item,
-                  ),
-                );
-                throw new Error(`Image upload failed`);
-              }
+            const result = await processAndUploadImageAction(formData);
 
-              setUploadQueue((prev) =>
-                prev.map((item, i) =>
-                  i === fileIndex
-                    ? { ...item, status: "completed", progress: 100 }
-                    : item,
-                ),
-              );
+            if (!result.success) throw new Error(result.error);
 
-              // ... (keep the rest of the block normalization exactly the same)
-              const bObj = block as unknown as Record<string, unknown>;
-              const dataObj =
-                (bObj["data"] as Record<string, unknown> | undefined) ||
-                undefined;
-              const caption =
-                dataObj && typeof dataObj["caption"] === "string"
-                  ? (dataObj["caption"] as string)
-                  : undefined;
-              return normalizeBlock({
+            setUploadQueue((prev) =>
+              prev.map((item, i) =>
+                i === fileIndex
+                  ? { ...item, status: "completed", progress: 100 }
+                  : item,
+              ),
+            );
+
+            const bObj = block as any;
+            updatedBlocks.push(
+              normalizeBlock({
                 type: "image",
-                data: { url: mainUpload.url, caption },
-              });
-            }
-            return normalizeBlock(block);
+                data: {
+                  url: result.mainUrl,
+                  thumbnail: result.thumbUrl,
+                  caption: bObj.data?.caption,
+                },
+              }),
+            );
+            continue; // Skip to next iteration
           }
-          return normalizeBlock(block);
-        }),
-      );
+        }
+        // If not an image or no file, just push original
+        updatedBlocks.push(normalizeBlock(block));
+      }
 
       const foundImage = updatedBlocks.find(
         (b) => (b as any)?.type === "image" && (b as any)?.data?.file?.url,

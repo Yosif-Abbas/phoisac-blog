@@ -288,7 +288,7 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
 
           <form
             onSubmit={handleSubmit}
-            className="relative flex flex-col h-full gap-y-2 animate-in fade-in duration-500"
+            className="relative flex flex-col h-full gap-y-2"
           >
             {/* 1. Thin, Sticky Action Bar */}
             <div className="flex items-center py-3 bg-container/90 backdrop-blur-xl border-b border-card-hover  ">
