@@ -30,7 +30,7 @@ export default function PostItem({ post }: { post: Post }) {
           <div className="shrink-0 relative w-20 h-20 sm:w-28 sm:h-28 rounded-xl overflow-hidden border border-card-hover bg-secondary/10">
             {hasImage ? (
               <Image
-                src={post.cover_image_url}
+                src={post.cover_image_url as string}
                 alt={post.title}
                 fill
                 className="object-cover transition-transform duration-200 group-hover:scale-105"
