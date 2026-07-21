@@ -1,9 +1,12 @@
 type CropResult = { file: File; url: string };
 
-let pendingResolve: ((value: CropResult) => void) | null = null;
+let pendingResolve: ((value: { file: File; url: string }) => void) | null =
+  null;
 let pendingReject: ((reason?: any) => void) | null = null;
 
-export const requestEditorCrop = (file: File): Promise => {
+export const requestEditorCrop = (
+  file: File,
+): Promise<{ file: File; url: string }> => {
   return new Promise((resolve, reject) => {
     pendingResolve = resolve;
     pendingReject = reject;
