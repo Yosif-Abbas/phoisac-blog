@@ -3,8 +3,9 @@
 import React, { useEffect, useRef } from "react";
 import type { StructuredContent } from "../../types/post";
 import PoemTool from "./tools/PoemTool";
-import imageCompression from "browser-image-compression";
+// import imageCompression from "browser-image-compression";
 import { optimizeImageBeforeUpload } from "@/lib/utils/media";
+import { requestEditorCrop } from "@/lib/utils/cropBridge";
 
 interface EditorProps {
   onReady?: () => void; // Add this prop
@@ -127,19 +128,34 @@ const Editor = (
                 },
 
                 async uploadByFile(file: File) {
-                  // 1. Pass the file through your new, highly optimized function
-                  const safeFile = await optimizeImageBeforeUpload(file);
+                  try {
+                    // 1. Pause Editor.js and wait for the user to crop via the React Modal
+                    const cropResult = await requestEditorCrop(file);
 
-                  // 2. Create the preview from the SAFE, small file
-                  const previewUrl = URL.createObjectURL(safeFile);
+                    // 2. Pass the CROPPED file through your optimizer for Next.js 1MB safety
+                    const safeFile = await optimizeImageBeforeUpload(
+                      cropResult.file,
+                    );
 
-                  return {
-                    success: 1,
-                    file: {
-                      url: previewUrl,
-                      localFile: safeFile,
-                    },
-                  };
+                    // 3. Create the final preview URL from the safe, optimized file
+                    const previewUrl = URL.createObjectURL(safeFile);
+
+                    // Optional: Cleanup the unoptimized crop url to prevent memory leaks
+                    URL.revokeObjectURL(cropResult.url);
+
+                    // 4. Return to Editor.js
+                    return {
+                      success: 1,
+                      file: {
+                        url: previewUrl,
+                        localFile: safeFile, // Your form hook will upload this safe file
+                      },
+                    };
+                  } catch (error) {
+                    // If the user clicks "Cancel" or closes the modal, the promise rejects
+                    console.log("Image upload cancelled by user");
+                    return { success: 0 };
+                  }
                 },
               },
             },

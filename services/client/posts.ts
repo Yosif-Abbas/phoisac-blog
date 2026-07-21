@@ -21,13 +21,13 @@ export async function getPosts({
     query = supabaseClient
       .rpc("search_posts_pro", { search_term: searchTerm })
       .select(
-        `id,created_at,updated_at,last_activity,title,slug,excerpt,post_tags(tags(id,name))`,
+        `id,created_at,updated_at,last_activity,title,slug,excerpt,cover_image_url,post_tags(tags(id,name))`,
       );
   } else {
     query = supabaseClient
       .from("posts")
       .select(
-        `id,created_at,updated_at,last_activity,title,slug,excerpt,post_tags(tags(id,name))`,
+        `id,created_at,updated_at,last_activity,title,slug,excerpt,cover_image_url,post_tags(tags(id,name))`,
       );
   }
 
@@ -198,7 +198,7 @@ export async function getPostBySlug(slug: string) {
   const { data, error } = await supabaseClient
     .from("posts")
     .select(
-      `id,created_at,updated_at,deleted_at,status,title,slug,excerpt,content,view_count,post_tags(tags(id,name))`,
+      `id,created_at,updated_at,deleted_at,cover_image_url,status,title,slug,excerpt,content,view_count,post_tags(tags(id,name))`,
     )
     .eq("slug", slug)
     .single();
@@ -288,9 +288,9 @@ export async function getLatestPosts({ limit }: { limit: number }) {
   let query = supabaseClient
     .from("posts")
     .select(
-      `id,created_at,updated_at,title,slug,excerpt,post_tags(tags(id,name))`,
+      `id,created_at,updated_at,last_activity,title,slug,excerpt,cover_image_url,post_tags(tags(id,name))`,
     )
-    .order("created_at", { ascending: false })
+    .order("last_activity", { ascending: false })
     .limit(limit);
 
   query = query.eq("status", "published");

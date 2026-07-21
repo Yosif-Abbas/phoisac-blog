@@ -36,6 +36,7 @@ export default function EditPostFormProviders() {
           tags: post.tags,
           excerpt: post.excerpt || "",
           slug: post.slug,
+          cover_image_url: post.cover_image_url,
         }}
         onSubmit={(formData) => {
           updatePost(
@@ -46,6 +47,8 @@ export default function EditPostFormProviders() {
               content: formData.content,
               excerpt: formData.excerpt,
               tags: formData.tags,
+              cover_image_url: formData.cover_image_url,
+              cover_image_file: formData.cover_image_file,
             },
             {
               onSuccess: () => {

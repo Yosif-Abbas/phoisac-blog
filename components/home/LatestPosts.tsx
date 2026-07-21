@@ -34,8 +34,9 @@ export default function LatestPosts() {
               title={post.title}
               slug={post.slug}
               excerpt={post.excerpt}
-              date={post.updated_at ?? post.created_at}
+              date={post.last_activity}
               tags={post.tags}
+              cover_image_url={post.cover_image_url}
             />
           ))}
     </div>

@@ -18,6 +18,8 @@ export async function createPostAction(payload: {
 }) {
   const supabase = await createClient();
 
+  console.log(payload);
+
   const firstImageUrl =
     payload.cover_image_url ||
     payload.content?.blocks?.find(
@@ -79,23 +81,12 @@ export async function updatePostAction(payload: {
 }) {
   const supabase = await createClient();
 
-  const { data: existingPost, error: existingPostError } = await supabase
-    .from("posts")
-    .select("cover_image_url")
-    .eq("id", payload.postId)
-    .single();
-
-  if (existingPostError) {
-    throw new Error(
-      `Failed to load existing post: ${existingPostError.message}`,
-    );
-  }
-
-  const firstImageUrl =
-    payload.cover_image_url ||
-    payload.content?.blocks?.find(
-      (block: any) => block.type === "image" && block.data?.file?.url,
-    )?.data?.file?.url;
+  const resolvedCoverUrl =
+    payload.cover_image_url !== undefined
+      ? payload.cover_image_url
+      : payload.content?.blocks?.find(
+          (block: any) => block.type === "image" && block.data?.file?.url,
+        )?.data?.file?.url;
 
   const finalTitle = await getUniqueTitle(
     supabase,
@@ -110,11 +101,8 @@ export async function updatePostAction(payload: {
     updated_at: payload.updated_at,
     status: payload.status,
     author_id: payload.author_id,
+    cover_image_url: resolvedCoverUrl ?? null,
   };
-
-  if (!existingPost?.cover_image_url && firstImageUrl) {
-    updateData.cover_image_url = firstImageUrl;
-  }
 
   // 1. Update the Post Content
   const { error: postError } = await supabase

@@ -104,7 +104,7 @@ export interface Post {
   slug: string;
   content: StructuredContent;
   author_id: UUID;
-  cover_image_url?: string | null;
+  cover_image_url: string | null;
   created_at?: string | Date;
   updated_at?: string | Date | null;
   excerpt?: string;

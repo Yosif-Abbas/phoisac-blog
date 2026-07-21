@@ -5,35 +5,45 @@ import React, {
   useState,
   useEffect,
   useImperativeHandle,
-  useCallback,
+  useMemo,
 } from "react";
 import { OutputData } from "@editorjs/editorjs";
-
 import Editor, { EditorHandle } from "@/components/dashboard/Editor";
-import Tags from "./Tags";
 import PublishConfirmationModal from "./PublishConfirmationModal";
+import PostMetadata from "./PostMetadata";
+import CoverImageSelector from "./CoverImageSelector";
 import { usePostFormTags } from "./context/TagsContext";
-import type { StructuredContent, Tag } from "@/types/cms";
-import toast from "react-hot-toast";
-import { Button } from "../ui/Button";
 import { useTags } from "@/hooks/tags/useTags";
 import QueryErrorRetry from "../ui/QueryErrorRetry";
 import EditorFormSkeleton from "../skeleton/EditorFormSkeleton";
+import { Button } from "../ui/Button";
+import toast from "react-hot-toast";
 import { generateSlug } from "@/lib/utils/media";
+import {
+  getPostStats,
+  getExcerptFromEditor,
+  getUploadStats,
+  getEditorImages,
+} from "@/lib/utils/postHelpers";
+import type { StructuredContent, Tag } from "@/types/cms";
+import ImageCropperModal from "./ImageCropperModal";
+import { rejectEditorCrop, resolveEditorCrop } from "@/lib/utils/cropBridge";
 
-// Define what the form expects
+// --- Types ---
 type UploadStatus = {
   name: string;
   status: "waiting" | "uploading" | "completed" | "error";
   progress: number;
 };
 
-type PostFormData = {
+export type PostFormData = {
   title: string;
   content: StructuredContent;
   tags: Tag[];
   excerpt?: string;
   slug: string;
+  cover_image_url?: string | null;
+  cover_image_file?: File | null;
 };
 
 interface PostFormProps {
@@ -43,10 +53,7 @@ interface PostFormProps {
   submitLabel?: string;
   uploadQueue?: UploadStatus[];
 }
-
-export type PostFormHandle = {
-  reset: () => void;
-};
+export type PostFormHandle = { reset: () => void };
 
 const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
   function PostForm(
@@ -56,22 +63,33 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
       isSubmitting,
       submitLabel = "نشر المقال",
       uploadQueue,
-    }: PostFormProps,
+    },
     ref,
   ) {
     const [isEditorLoaded, setIsEditorLoaded] = useState(false);
     const editorRef = useRef<EditorHandle>(null);
-
-    // Key used to force remounting the Editor when we need to clear it
     const [editorKey, setEditorKey] = useState(0);
 
-    // Initialize state with initialData if it exists
+    // Form State
     const [title, setTitle] = useState(initialData?.title || "");
     const [excerpt, setExcerpt] = useState(initialData?.excerpt || "");
     const [editorData, setEditorData] = useState<OutputData | undefined>(
       initialData?.content,
     );
 
+    // Cover Image State
+    const [coverUrl, setCoverUrl] = useState<string | null>(
+      initialData?.cover_image_url || null,
+    );
+    // FIX: Safely initialize coverFile in case initialData provides it
+    const [coverFile, setCoverFile] = useState<File | null>(
+      initialData?.cover_image_file || null,
+    );
+    const [userDidManuallySelect, setUserDidManuallySelect] = useState(
+      !!initialData?.cover_image_url,
+    );
+
+    // Modals & Hooks
     const {
       tags: existingTags,
       isLoading,
@@ -79,99 +97,82 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
       isError,
       refetch,
     } = useTags();
-
     const { tags, setTags } = usePostFormTags();
     const [isConfirmingLargeUpload, setIsConfirmingLargeUpload] =
       useState(false);
     const [pendingSubmitData, setPendingSubmitData] =
       useState<PostFormData | null>(null);
 
-    const reset = useCallback(() => {
-      setTitle("");
-      setExcerpt("");
-      setEditorData(undefined);
-      setTags([]);
-      setPendingSubmitData(null);
-      setIsConfirmingLargeUpload(false);
-      setEditorKey((k) => k + 1);
-    }, [setTags]);
+    const [editorCropData, setEditorCropData] = useState<{
+      file: File;
+      url: string;
+    } | null>(null);
+
+    // Derived Data (Memoized for performance)
+    const stats = useMemo(() => getPostStats(editorData), [editorData]);
+    const uploadStats = useMemo(
+      () => getUploadStats(editorData?.blocks),
+      [editorData],
+    );
+    const editorImages = useMemo(
+      () => getEditorImages(editorData?.blocks),
+      [editorData],
+    );
+    const largeUploadSize = parseFloat(uploadStats.totalMB);
+
+    useEffect(() => {
+      const handleOpenCrop = (e: Event) => {
+        const customEvent = e as CustomEvent<{ file: File }>;
+        const file = customEvent.detail.file;
+        setEditorCropData({ file, url: URL.createObjectURL(file) });
+      };
+
+      window.addEventListener("open-editor-crop", handleOpenCrop);
+      return () =>
+        window.removeEventListener("open-editor-crop", handleOpenCrop);
+    }, []);
+
+    // Auto-sync cover image if user hasn't manually chosen one
+    useEffect(() => {
+      if (!userDidManuallySelect && editorImages.length > 0) {
+        setCoverUrl(editorImages[0]);
+      } else if (!userDidManuallySelect && editorImages.length === 0) {
+        setCoverUrl(null);
+      }
+    }, [editorImages, userDidManuallySelect]);
 
     useImperativeHandle(ref, () => ({
-      reset,
+      reset: () => {
+        setTitle("");
+        setExcerpt("");
+        setEditorData(undefined);
+        setTags([]);
+        setCoverUrl(null);
+        setCoverFile(null); // Ensure file is cleared on reset
+        setUserDidManuallySelect(false);
+        setPendingSubmitData(null);
+        setIsConfirmingLargeUpload(false);
+        setEditorKey((k) => k + 1);
+      },
     }));
 
-    const getPostStats = () => {
-      if (!editorData || !editorData.blocks) return { words: 0, time: 0 };
+    useEffect(() => {
+      if (initialData?.tags) setTags(initialData.tags);
+    }, [initialData, setTags]);
 
-      let text = "";
-      editorData.blocks.forEach((block) => {
-        // Extract text from paragraphs and headers
-        if (block.type === "paragraph" || block.type === "header") {
-          // Remove HTML tags that Editor.js might include (like <b> or <i>)
-          text += (block.data.text || "").replace(/<[^>]*>?/gm, "") + " ";
-        }
-      });
-
-      const words = text.trim().split(/\s+/).filter(Boolean).length;
-      const time = Math.ceil(words / 125);
-
-      return { words, time };
-    };
-
-    const stats = getPostStats();
-
-    const getExcerptFromEditor = (content: OutputData | undefined) => {
-      if (!content?.blocks || content.blocks.length === 0) return "";
-
-      for (const block of content.blocks) {
-        let text = block.data?.text;
-        if (block.type === "poem") {
-          const sadr = block.data?.cols[0].sadr;
-          const ajuuz = block.data?.cols[0].ajuuz;
-          text = `${sadr} ${ajuuz ? "✦ " + ajuuz : ""}`;
-        }
-
-        if (!text) continue;
-
-        const plainText = text
-          .replace(/<[^>]*>/g, "")
-          .replace(/\s+/g, " ")
-          .trim();
-
-        if (plainText) {
-          return `${plainText.length > 120 ? plainText.slice(0, 120).trim() + "..." : plainText.slice(0, 120).trim()}`;
-        }
-      }
-
-      return "";
-    };
-
-    const getUploadStats = (
-      blocks:
-        | Array<{
-            type?: string;
-            data?: { file?: { localFile?: File } };
-          }>
-        | undefined,
+    const handleCoverChange = (
+      data: { url: string; file?: File } | null,
+      isManual: boolean,
     ) => {
-      if (!blocks) return;
-      const images = blocks
-        .filter((b) => b.type === "image" && b.data?.file?.localFile)
-        .map((b) => b.data!.file!.localFile as File);
-
-      const totalBytes = images.reduce((acc, file) => acc + file.size, 0);
-      const totalMB = (totalBytes / (1024 * 1024)).toFixed(2);
-
-      return { images, totalMB };
-    };
-
-    const imagesSize = getUploadStats(editorData?.blocks);
-    const largeUploadSize = parseFloat(imagesSize?.totalMB ?? "0");
-
-    const handleCloseConfirmation = () => {
-      if (isSubmitting) return;
-      setIsConfirmingLargeUpload(false);
-      setPendingSubmitData(null);
+      if (!data) {
+        setCoverUrl(null);
+        setCoverFile(null);
+      } else {
+        setCoverUrl(data.url);
+        // FIX: Ensure it correctly falls back to null if no file is provided
+        setCoverFile(data.file || null);
+      }
+      setUserDidManuallySelect(isManual);
     };
 
     const submitForm = (data: PostFormData) => {
@@ -180,44 +181,18 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
         setIsConfirmingLargeUpload(true);
         return;
       }
-
       onSubmit(data);
     };
-
-    useEffect(() => {
-      if (
-        !isSubmitting &&
-        isConfirmingLargeUpload &&
-        pendingSubmitData === null
-      ) {
-        setIsConfirmingLargeUpload(false);
-      }
-    }, [isSubmitting, isConfirmingLargeUpload, pendingSubmitData]);
-
-    // Populate tags context when editing
-    useEffect(() => {
-      if (initialData?.tags) {
-        setTags(initialData.tags);
-      }
-    }, [initialData, setTags]);
 
     const handleSubmit = (
       e: React.FormEvent<HTMLFormElement>,
       skipTagCheck: boolean = false,
     ) => {
       e.preventDefault();
-
-      // 1. Validate Title
-      if (!title.trim()) {
-        toast.error("يرجى كتابة عنوان للمنشور قبل النشر.");
-        return;
-      }
-
-      // 2. Validate Content (Editor.js blocks)
-      if (!editorData || editorData.blocks.length === 0) {
-        toast.error("المنشور فارغ. يرجى كتابة بعض المحتوى.");
-        return;
-      }
+      if (!title.trim())
+        return toast.error("يرجى كتابة عنوان للمنشور قبل النشر.");
+      if (!editorData || editorData.blocks.length === 0)
+        return toast.error("المنشور فارغ. يرجى كتابة بعض المحتوى.");
 
       const formData: PostFormData = {
         title: title.trim(),
@@ -225,52 +200,36 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
         tags,
         excerpt: excerpt.trim() || getExcerptFromEditor(editorData),
         slug: generateSlug(title.trim()),
+        // FIX: Always pass the URL (even if it's a blob). The hook safely overwrites it after uploading the file.
+        cover_image_url: coverUrl,
+        cover_image_file: coverFile,
       };
 
-      // 3. Validate Tags (Optional, but good practice)
       if (!skipTagCheck && tags.length === 0) {
-        const TOAST_ID = "publish-confirmation";
-
         toast(
           (t) => (
             <div dir="rtl" className="flex flex-col gap-3 text-right w-full">
-              <div className="flex flex-col gap-1.5">
-                <p className="text-foreground font-medium leading-relaxed">
-                  لا يوجد أي وسوم{" "}
-                  <span className="text-xs font-bold text-tag-foreground bg-tag px-1.5 py-0.5 rounded-md mx-1 border border-tag-border shadow-sm">
-                    Tags
-                  </span>{" "}
-                  على المنشور.
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  هل أنت متأكد من النشر بدونها؟
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2 mt-2">
+              <p className="font-medium">
+                لا يوجد أي وسوم. هل أنت متأكد من النشر بدونها؟
+              </p>
+              <div className="flex gap-2">
                 <Button
                   onClick={() => {
                     toast.dismiss(t.id);
                     submitForm(formData);
                   }}
                   disabled={isSubmitting}
-                  className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-all"
                 >
-                  {isSubmitting ? "جاري الحفظ..." : submitLabel}
+                  نشر بدون وسوم
                 </Button>
-
-                <button onClick={() => toast.dismiss(t.id)} className="">
-                  إلغاء
-                </button>
+                <button onClick={() => toast.dismiss(t.id)}>إلغاء</button>
               </div>
             </div>
           ),
-          { id: TOAST_ID, duration: Infinity },
+          { duration: Infinity },
         );
-
         return;
       }
-
       submitForm(formData);
     };
 
@@ -290,88 +249,102 @@ const PostForm = React.forwardRef<PostFormHandle, PostFormProps>(
             onSubmit={handleSubmit}
             className="relative flex flex-col h-full gap-y-2"
           >
-            {/* 1. Thin, Sticky Action Bar */}
-            <div className="flex items-center py-3 bg-container/90 backdrop-blur-xl border-b border-card-hover  ">
+            {/* Action Bar */}
+            <div className="flex items-center py-3 bg-container/90 backdrop-blur-xl border-b border-card-hover">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-all disabled:opacity-50"
               >
                 {isSubmitting ? "جاري الحفظ..." : submitLabel}
               </button>
             </div>
 
-            {/* 2. The Writing Canvas */}
+            {/* Canvas */}
             <div className="max-w-4xl mx-auto w-full flex flex-col gap-y-4 px-4 md:px-0 mt-4">
-              {/* Title Container */}
-              <div className="group relative bg-white/5 dark:bg-[#1F2937]/20 border border-[#E5E7EB] dark:border-card-hover rounded-2xl md:rounded-3xl p-5 md:p-8 transition-all duration-300 focus-within:border-primary/40 focus-within:bg-white/10 dark:focus-within:bg-[#1F2937]/40 shadow-sm focus-within:shadow-md">
-                {/* Label: Hidden or smaller on mobile to keep the header clean */}
-                <span className="absolute -top-2.5 right-4 md:right-8 bg-background px-2 text-[10px] md:text-xs font-medium text-muted-foreground/60 tracking-widest uppercase">
+              <div className="group relative bg-white/5 border border-[#E5E7EB] dark:border-card-hover rounded-2xl p-5 md:p-8">
+                <span className="absolute -top-2.5 right-4 bg-background px-2 text-[10px] font-medium text-muted-foreground/60">
                   العنوان الرئيسي
                 </span>
-
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="عنوان المنشور..."
-                  // Responsive font sizes: text-3xl on mobile, 5xl/6xl on desktop
-                  className="w-full font-serif text-3xl md:text-5xl lg:text-6xl font-bold bg-transparent border-none outline-none placeholder:text-muted-foreground/20 focus:ring-0 px-0 text-start leading-tight"
+                  className="w-full font-serif text-3xl md:text-5xl font-bold bg-transparent border-none outline-none placeholder:text-muted-foreground/20"
                 />
               </div>
 
-              {/* Excerpt Container */}
-              <div className="group relative bg-white/5 dark:bg-[#1F2937]/20 border border-[#E5E7EB] dark:border-card-hover rounded-xl md:rounded-2xl p-4 transition-all duration-300 focus-within:border-primary/40 focus-within:bg-white/10 dark:focus-within:bg-[#1F2937]/40 shadow-sm focus-within:shadow-md">
+              <div className="group relative bg-white/5 border border-[#E5E7EB] dark:border-card-hover rounded-xl p-4">
                 <textarea
                   rows={2}
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder="ملخص قصير..."
-                  className="w-full text-base md:text-lg bg-transparent border-none outline-none placeholder:text-muted-foreground/20 focus:ring-0 px-0 text-start leading-relaxed resize-none"
+                  placeholder="ملخص قصير... (اختياري)"
+                  className="w-full text-base bg-transparent border-none outline-none placeholder:text-muted-foreground/20 resize-none"
                 />
               </div>
 
-              {/* Editor Wrapper */}
-              <div className="prose prose-stone dark:prose-invert max-w-none w-full mt-4 md:mt-6 px-1 md:px-0">
+              <div className="prose prose-stone dark:prose-invert max-w-none w-full mt-4">
                 <Editor
                   key={editorKey}
                   ref={editorRef}
                   onReady={() => setIsEditorLoaded(true)}
                   onChange={setEditorData}
                   data={editorData}
-                  placeholder="ابدأ بكتابة قصيدتك أو مقالك هنا..."
+                  placeholder="ابدأ بالكتابة..."
                 />
               </div>
             </div>
 
-            <div className="w-full bg-white/5 dark:bg-[#1F2937]/30 border border-[#E5E7EB] dark:border-card-hover rounded-xl p-4">
-              <div className="flex flex-col  gap-x-4 text-sm text-muted-foreground pr-4 pb-4">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground pb-1">
-                  الاحصائيات (Stats)
-                </h3>
-                <div className="text-xs">
-                  <p>{stats.words} كلمة</p>
-                  <p>{stats.time} دقيقة قراءة</p>
-                  <p>حجم الملفات: {imagesSize?.totalMB} ميجابايت</p>
-                </div>
+            {/* --- BOTTOM GRID (Cover Image & Metadata) --- */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl mx-auto w-full px-4 md:px-0 mt-4 mb-12">
+              <div className="order-1 lg:order-1">
+                <CoverImageSelector
+                  coverUrl={coverUrl}
+                  onCoverChange={handleCoverChange}
+                  editorImages={editorImages}
+                />
               </div>
-
-              <Tags existingTags={existingTags ?? []} />
+              <div className="order-2 lg:order-2 h-full">
+                <PostMetadata
+                  stats={stats}
+                  totalMB={uploadStats.totalMB}
+                  existingTags={existingTags ?? []}
+                />
+              </div>
             </div>
+            {/* ----------------------------------------------- */}
           </form>
         </div>
 
+        {/* Publish Confirmation Modal */}
         <PublishConfirmationModal
           isOpen={isConfirmingLargeUpload}
-          totalMB={imagesSize?.totalMB ?? "0"}
-          imageCount={imagesSize?.images?.length ?? 0}
+          totalMB={uploadStats.totalMB}
+          imageCount={uploadStats.images.length}
           uploadQueue={uploadQueue}
           isUploading={isSubmitting}
-          onClose={handleCloseConfirmation}
+          onClose={() => setIsConfirmingLargeUpload(false)}
           onConfirm={() => {
-            if (!pendingSubmitData) return;
-            onSubmit(pendingSubmitData);
-            setPendingSubmitData(null);
+            if (pendingSubmitData) {
+              onSubmit(pendingSubmitData);
+              setPendingSubmitData(null);
+            }
+          }}
+        />
+
+        {/* --- NEW: Editor Image Crop Modal (Free-form / No aspect ratio) --- */}
+        <ImageCropperModal
+          isOpen={!!editorCropData}
+          imageUrl={editorCropData?.url || null}
+          onClose={() => {
+            rejectEditorCrop();
+            setEditorCropData(null);
+          }}
+          onCropComplete={(croppedFile, croppedUrl) => {
+            resolveEditorCrop(croppedFile, croppedUrl);
+            setEditorCropData(null);
           }}
         />
       </>

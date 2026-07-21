@@ -7,50 +7,58 @@ import { generateStoragePath } from "@/lib/utils/media";
 export async function processAndUploadImageAction(formData: FormData) {
   try {
     const file = formData.get("file") as File;
+    const intent = (formData.get("intent") as "cover" | "editor") || "editor";
+
     if (!file) throw new Error("No file provided");
 
     const supabase = await createClient(); // Server-side client
 
-    // 1. Get Buffer & Metadata
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const metadata = await sharp(buffer).metadata();
 
-    const filePath = generateStoragePath(file.name, "blog");
-    const thumbFilePath = filePath.replace(/\.[^/.]+$/, "_thumb.webp");
+    const baseFilePath = generateStoragePath(file.name, "blog");
 
-    // 2. Process in parallel (Optimized + Thumbnail)
-    // Sharp is much more robust than Canvas for high-res/HEIC files
-    const [optimizedBuffer, thumbBuffer] = await Promise.all([
-      sharp(buffer).webp({ quality: 85 }).toBuffer(),
-      sharp(buffer)
-        .resize(300, 300, { fit: "cover" })
+    let finalBuffer: Buffer;
+    let finalFilePath: string;
+
+    // Process differently based on intent
+    if (intent === "cover") {
+      // DEDICATED COVER: Only upload a highly compressed, resized version.
+      // 800px width is perfect for both feed grids and mobile hero images.
+      finalFilePath = baseFilePath.replace(/\.[^/.]+$/, "_cover.webp");
+      finalBuffer = await sharp(buffer)
+        .resize({ width: 800, withoutEnlargement: true })
         .webp({ quality: 80 })
-        .toBuffer(),
-    ]);
+        .toBuffer();
+    } else {
+      // EDITOR IMAGE: Keep higher resolution for article reading, but still optimize.
+      finalFilePath = baseFilePath.replace(/\.[^/.]+$/, ".webp");
+      finalBuffer = await sharp(buffer)
+        .resize({ width: 1600, withoutEnlargement: true })
+        .webp({ quality: 85 })
+        .toBuffer();
+    }
 
-    // 3. Upload to Supabase Storage
-    const [mainUpload, thumbUpload] = await Promise.all([
-      supabase.storage.from("post-images").upload(filePath, optimizedBuffer, {
-        contentType: "image/webp",
-        upsert: true,
-      }),
-      supabase.storage.from("post-images").upload(thumbFilePath, thumbBuffer, {
-        contentType: "image/webp",
-        upsert: true,
-      }),
-    ]);
+    // Get the exact dimensions of the newly resized buffer for the database
+    const finalMetadata = await sharp(finalBuffer).metadata();
+    const finalWidth = finalMetadata.width || 0;
+    const finalHeight = finalMetadata.height || 0;
 
-    if (mainUpload.error || thumbUpload.error)
-      throw new Error("Storage upload failed");
-
-    const mainUrl = supabase.storage.from("post-images").getPublicUrl(filePath)
-      .data.publicUrl;
-    const thumbUrl = supabase.storage
+    // Upload only the ONE needed file
+    const uploadResult = await supabase.storage
       .from("post-images")
-      .getPublicUrl(thumbFilePath).data.publicUrl;
+      .upload(finalFilePath, finalBuffer, {
+        contentType: "image/webp",
+        upsert: true,
+      });
 
-    // 4. Persist Media Records (The "media" table logic)
+    if (uploadResult.error) throw new Error("Storage upload failed");
+
+    const publicUrl = supabase.storage
+      .from("post-images")
+      .getPublicUrl(finalFilePath).data.publicUrl;
+
+    // Persist Media Record
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -58,17 +66,17 @@ export async function processAndUploadImageAction(formData: FormData) {
     await supabase.from("media").insert([
       {
         file_name: file.name,
-        file_path: filePath,
-        public_url: mainUrl,
-        file_size: optimizedBuffer.length,
+        file_path: finalFilePath,
+        public_url: publicUrl,
+        file_size: finalBuffer.length,
         mime_type: "image/webp",
-        width: metadata.width,
-        height: metadata.height,
+        width: finalWidth,
+        height: finalHeight,
         uploader_id: user?.id || null,
       },
     ]);
 
-    return { success: true, mainUrl, thumbUrl };
+    return { success: true, url: publicUrl };
   } catch (error: any) {
     console.error("Server Action Error:", error);
     return { success: false, error: error.message };
